@@ -11,5 +11,21 @@ services:
       - postgres:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+    networks:
+      - hippo-web
+  api:
+    image: node:16-alpine
+    restart: always
+    build: ./api
+    ports:
+      - '3001:3000'
+    depends_on:
+      - db
+    networks:
+      - hippo-web
 volumes:
   postgres:
+
+networks:
+  hippo-web:
+    driver: bridge
