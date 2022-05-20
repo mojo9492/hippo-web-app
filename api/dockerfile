@@ -1,0 +1,16 @@
+FROM node:16
+
+WORKDIR /src/app
+
+COPY . /src/app
+
+EXPOSE 3000
+EXPOSE 5555
+
+ENV DATABASE_URL=${DATABASE_URL}
+
+RUN yarn install
+
+RUN chmod +x init/entrypoint.sh
+
+CMD init/entrypoint.sh

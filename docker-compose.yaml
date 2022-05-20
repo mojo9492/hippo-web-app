@@ -17,15 +17,17 @@ services:
     image: node:16-alpine
     restart: always
     build: ./api
+    environment:
+      - DATABASE_URL=$DATABASE_URL
     ports:
-      - '3001:3000'
+      - '3000:3000'
+      - '5555:5555'
     depends_on:
       - db
     networks:
       - hippo-web
 volumes:
   postgres:
-
 networks:
   hippo-web:
     driver: bridge

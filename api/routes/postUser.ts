@@ -1,11 +1,17 @@
 import { Request, Response } from 'express'
+import { User } from '@prisma/client'
 import prisma from '../prisma'
 
-export default async function postUser(req: Request, res: Response) {
+interface IPostUserBody {
+    user: User
+}
+
+export default async function postUser(req: Request<any, any, IPostUserBody>, res: Response) {
     let response
     try {
+        const { user } = req.body
         response = await prisma.user.create({
-            data: { ...req.body },
+            data: user,
         })
         if (!response) {
             throw new Error('Could not save entry.')
