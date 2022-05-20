@@ -1,5 +1,5 @@
 export interface Post {
-    id: string
+    id?: string
     date: Date
     bloodPressure?: string
     bsl?: number
@@ -7,7 +7,7 @@ export interface Post {
     insAmount?: number
     weight?: number
     remarks?: string
-    updatedAt: Date
+    updatedAt?: Date
     author?: User
     authorId?: number
 }
