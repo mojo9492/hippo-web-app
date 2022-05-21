@@ -62,7 +62,8 @@ const formatDate = (d = new Date()) => {
             <label>
                 Date:
                 <div class="postForm-date">
-                    <select v-model="postMonth" :default="postMonth" :disabled="nowDateChecked">
+                    <label for="month">Month</label>
+                    <select id="month" v-model="postMonth" :default="postMonth" :disabled="nowDateChecked">
                         <option value="0">Janurary</option>
                         <option value="1">Feburary</option>
                         <option value="2">March</option>
@@ -76,15 +77,21 @@ const formatDate = (d = new Date()) => {
                         <option value="10">November</option>
                         <option value="11">December</option>
                     </select>
-                    <input type="number" inputmode="numeric" v-model="postDate" :disabled="nowDateChecked" />
-                    <input type="number" inputmode="numeric" v-model="postYear" :disabled="nowDateChecked" />
+                    <label for="day">Day</label>
+                    <input id="day" type="number" inputmode="numeric" v-model="postDate" :disabled="nowDateChecked" />
+                    <label for="year">Year</label>
+                    <input id="year" type="number" inputmode="numeric" v-model="postYear" :disabled="nowDateChecked" />
                 </div>
             </label>
             <label>
                 Time:
                 <div class="postForm-time">
-                    <input type="number" inputmode="numeric" v-model="postHour" :disabled="nowDateChecked" /> :
-                    <input type="number" inputmode="numeric" v-model="postMinute" :disabled="nowDateChecked" />
+                    <label for="hour">Hour</label>
+                    <input id="hour" type="number" inputmode="numeric" v-model="postHour" :disabled="nowDateChecked" />
+                    :
+                    <label for="minute">Minute</label>
+                    <input id="minute" type="number" inputmode="numeric" v-model="postMinute"
+                        :disabled="nowDateChecked" />
                 </div>
             </label>
             <label class="postForm-now-input">
@@ -158,10 +165,10 @@ const formatDate = (d = new Date()) => {
 <style scoped lang="sass">
 %postForm-dual-inputs
     display: flex
-    flex-flow: row wrap
+    flex-flow: row nowrap
     justify-content: flex-start
     place-items: center
-    margin: 1em
+    margin: 1em 0
     padding: 0
 
 %dual-input
@@ -215,6 +222,8 @@ const formatDate = (d = new Date()) => {
             width: 100%
             margin: 0 1em
             padding: 0.5em
+            font-size: 1.2rem
+            font-weight: 500
 
         fieldset
             display: flex
@@ -285,6 +294,27 @@ const formatDate = (d = new Date()) => {
             width: 100%
             margin: 1em 0
             padding: 0
+
+            .postForm-date
+                @extend %postForm-dual-inputs
+                flex-wrap: wrap
+
+                select
+                    @extend %dual-input
+                input
+                    @extend %dual-input
+            
+            .postForm-time
+                @extend %postForm-dual-inputs
+
+                input
+                    @extend %dual-input
+
+            .postForm-now-input
+                @extend %postForm-dual-inputs
+
+                input
+                    @extend %dual-input
 
             label
                 width: 100%

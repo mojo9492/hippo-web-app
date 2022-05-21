@@ -35,7 +35,7 @@ const handleDelete = async (id: string) => {
     if (!deleteResult) {
         throw new Error('could not delete post: ' + id)
     }
-    // todo: handle undo delete
+    // * show undo option
     showUndo.value = true
     deletedPost.value = userEntries.value.find((post) => post.id === id)
     // * returns the deleted post for undo purposes
