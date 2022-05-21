@@ -1,6 +1,13 @@
 import { Post } from "../../models"
 import { MBP_END } from "../../models/Core"
 
+export async function getEntries(id: number) {
+    const response = await fetch(`${MBP_END}/post/${id}`)
+    if (!response.ok) {
+        throw new Error('could not find posts')
+    }
+    return await response.json()
+}
 export async function postEntry(post: Post) {
     const response = await fetch(`${MBP_END}/post`, {
         method: 'POST',

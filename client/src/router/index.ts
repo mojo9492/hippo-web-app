@@ -27,4 +27,12 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from) => {
+  // * prevent the user from navigating to server routes
+  if (to.path.startsWith('/api')) {
+  console.log("🚀 ~ file: index.ts ~ line 33 ~ router.beforeEach ~ path", to.path)
+    
+    return router.push('/')
+  }
+})
 export default router

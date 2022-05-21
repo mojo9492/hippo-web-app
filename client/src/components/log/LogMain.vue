@@ -2,8 +2,7 @@
 import { Ref, ref, onMounted, watch } from 'vue'
 import { Post } from '@/models'
 import LogTable from './LogTable.vue'
-import { MBP_END } from '../../models/Core';
-import { deleteEntry, postEntry } from './LogController';
+import { deleteEntry, getEntries, postEntry } from './LogController';
 
 interface ILogProps {
     userId: number
@@ -19,7 +18,6 @@ const deletedPosts: Ref<Post[]> = ref([])
 const handleAddPost = async (post: Post) => {
     const newPost = await postEntry(post)
     if (!newPost) return
-    console.log("🚀 ~ file: LogMain.vue ~ line 21 ~ handleAddPost ~ newPost", newPost)
     userEntries.value.push(post)
 }
 const handleUndoPrompt = async (id: string) => {
@@ -55,12 +53,8 @@ const handleDeletion = async () => {
 // * emits
 defineEmits(['postToAdd', 'postToDelete'])
 onMounted(async () => {
-    const response = await fetch(`${MBP_END}/post/${props.userId}`)
-    if (!response.ok) {
-        throw new Error('could not find posts: ' + props.userEmail)
-    }
-    const data = await response.json()
-    userEntries.value = data
+    const entries = await getEntries(props.userId)
+    userEntries.value = entries
 })
 // * watches for user undo state and will delete all entries in the buffer in 8 seconds
 watch(showUndo, (deleteEntry) => {

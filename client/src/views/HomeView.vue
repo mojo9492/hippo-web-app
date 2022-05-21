@@ -1,18 +1,20 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="@/assets/logo.png">
-    <HelloWorld msg="Hello from Hippo" />
+    <h1>Hello from Hippo</h1>
+    <LoginForm />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/landing/HelloWorld.vue'; // @ is an alias to /src
+import { defineComponent } from 'vue'
+// @ is an alias to /src
+import LoginForm from '@/components/landing/LoginForm.vue'
 
 export default defineComponent({
   name: 'HomeView',
   components: {
-    HelloWorld,
+    LoginForm,
   },
 });
 </script>
