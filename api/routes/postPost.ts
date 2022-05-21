@@ -11,7 +11,6 @@ export default async function postPost(req: Request, res: Response) {
                 date, bloodPressure, bsl, insulin, insAmount, weight
             }
         })
-        console.log("🚀 ~ file: postPost.ts ~ line 15 ~ postPost ~ response", response)
         if (!response) {
             throw new Error('Could not save entry.')
         }

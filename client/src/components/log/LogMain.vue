@@ -10,7 +10,7 @@ interface ILogProps {
 }
 const props = defineProps<ILogProps>()
 
-defineEmits(['postToDelete', 'postToAdd'])
+defineEmits(['postToAdd', 'postToDelete'])
 
 const userEntries: Ref<Post[]> = ref([])
 
@@ -35,11 +35,13 @@ const handleAddPost = async (post: Post) => {
         const data = await response.json()
         throw new Error('could not add post: ' + data.body)
     }
-    // todo impletment data return
     userEntries.value.push(post)
 }
 
 const handleDelete = async (id: string) => {
+    // todo: delete this log: hit
+    console.log('hit', id)
+
     const deleteResult = await fetch(`http://localhost:3000/post/${id}`, {
         method: 'DELETE',
     })
@@ -59,7 +61,7 @@ const handleDelete = async (id: string) => {
     <div id="container">
         <h1 v-if="userEntries">Welcome, {{ props.userName }}</h1>
         <h1 v-else>Welcome back</h1>
-        <LogTable @postToAdd="handleAddPost" @postToDelete="handleDelete" :entries="userEntries" />
+        <LogTable @postToAdd="handleAddPost" @postToDelete="handleDelete" :author-id="props.userId" :author-first="props.userName" :entries="userEntries" />
     </div>
 </template>
 
