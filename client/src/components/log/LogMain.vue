@@ -86,20 +86,25 @@ watch(showUndo, () => {
 </template>
 
 <style scoped lang="sass">
-    #container
-        display: flex
-        flex-flow: column nowrap
+@use '@/_lib' as lib
 
-        .undo-button
+#container
+    display: flex
+    flex-flow: column nowrap
+
+    h1
+        font-size: lib.$font-size-xxl
+
+    .undo-button
+        background: red
+        color: white
+        border: none
+        border-radius: .25em
+        height: 3em
+        width: 6em
+        cursor: pointer
+        &:hover
             background: red
-            color: white
-            border: none
-            border-radius: .25em
-            height: 3em
-            width: 6em
-            cursor: pointer
-            &:hover
-                background: red
-            &:active
-                background: red
+        &:active
+            background: red
 </style>

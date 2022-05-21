@@ -105,22 +105,24 @@ const formatDate = (d = new Date()) => {
                 <legend>Blood Sugars and Insulin</legend>
                 <label>
                     Blood Sugar Level:
+                    <label for="bsl"></label>
                     <input type="number" inputmode="numeric" v-model="postBSL"
-                        placeholder="Enter the blood sugar levels..." />
+                        placeholder="Enter blood sugar level..." />
                 </label>
                 <label>
                     Insulin:
                     <input type="text" v-model="postInsulin" placeholder="Enter insulin name..." />
-                    <input type="text" v-model="postInsAmount" placeholder="Enter the amount of insulin..." />
+                    <label for="insAmount">Amount Given</label>
+                    <input id="insAmount" type="text" v-model="postInsAmount" placeholder="Enter amount..." />
                 </label>
             </fieldset>
             <fieldset>
                 <legend>Blood Pressure</legend>
                 <input type="number" inputmode="numeric" v-model="postBloodPressureSys"
-                    placeholder="Enter systolic (top) #..." />
+                    placeholder="Enter top #..." />
                 &nbsp;/&nbsp;
                 <input type="number" inputmode="numeric" v-model="postBloodPressureDia"
-                    placeholder="Enter the diastolic (bottom) #..." />
+                    placeholder="Enter bottom #..." />
             </fieldset>
             <label>
                 Weight:
@@ -163,6 +165,11 @@ const formatDate = (d = new Date()) => {
 </template>
 
 <style scoped lang="sass">
+@use '@/_lib' as lib
+
+input
+    font-size: lib.$font-size-base
+
 %postForm-dual-inputs
     display: flex
     flex-flow: row nowrap
@@ -234,6 +241,11 @@ const formatDate = (d = new Date()) => {
             margin: 1em
             max-width: 100vw
 
+            legend
+                font-size: lib.$font-size-lg
+                font-weight: 500
+                margin: 0 1em
+
             input
                 height: 2.6em
                 max-width: 16em
@@ -277,17 +289,33 @@ const formatDate = (d = new Date()) => {
                 max-width: 6em
                 white-space: nowrap
                 padding: 1rem
-
-            
+ 
 // * shrink app to fit width of phone for width < 400px
 @media (max-width: 400px), (min-device-width: 360px) and (max-device-width: 1024px)
+    %m-postForm-dual-inputs
+        display: flex
+        flex-flow: row nowrap
+        justify-content: space-around
+        place-items: center
+        margin: 1em 0
+        padding: 0
+
+    %mobile-dual-input
+        display: flex
+        flex-flow: row nowrap
+        justify-content: flex-start
+        place-items: center
+        font-size: 1rem
+        margin: 1em 0
+        padding: 0
+        width: 96%
+        
     #container
         padding: 0
-        margin: 0
+        margin: 0 0.5em
         width: 100%
         height: 100%
         overflow: auto
-        font-size: 0.8rem
 
         #postForm
             height: 100%
@@ -296,28 +324,28 @@ const formatDate = (d = new Date()) => {
             padding: 0
 
             .postForm-date
-                @extend %postForm-dual-inputs
+                @extend %m-postForm-dual-inputs
                 flex-wrap: wrap
 
                 select
-                    @extend %dual-input
+                    @extend %mobile-dual-input
                 input
-                    @extend %dual-input
+                    @extend %mobile-dual-input
             
             .postForm-time
-                @extend %postForm-dual-inputs
+                @extend %m-postForm-dual-inputs
 
                 input
-                    @extend %dual-input
+                    @extend %mobile-dual-input
 
             .postForm-now-input
-                @extend %postForm-dual-inputs
+                @extend %m-postForm-dual-inputs
 
                 input
                     @extend %dual-input
 
             label
-                width: 100%
+                width: 90%
                 margin: 1em 0
                 padding: 0
 
@@ -327,43 +355,45 @@ const formatDate = (d = new Date()) => {
                     width: 10em
 
             fieldset
-                width: 96%
+                width: 90%
                 margin: 1em 0
                 padding: 0 0.5em
-                input
-                    max-width: 100%
-                    margin: 1em 0
+                // border: none
 
+                input
+                    @extend %mobile-dual-input
 
             textarea
                 width: 90%
                 margin: 0
                 padding: 0
+                font-size: lib.$font-size-base
 
             button
                 width: 100%
                 margin: 1em 0 4em
         
         #htable-container
-            overflow: auto
             width: 100%
+            overflow: auto
             overflow-x: scroll
+            overflow-y: scroll
 
-        .htable
-            border: none
-            margin: 0
-            padding: 0
+            .htable
+                border: none
+                margin: 0
+                padding: 0
 
-            .htable-header
-                font-size: 1rem
-                font-weight: 300
-            
-            .htable-entry
-                font-size: 0.8rem
+                .htable-header
+                    font-size: lib.$font-size-base
+                    font-weight: 300
+                
+                .htable-entry
+                    font-size: 0.8rem
 
-            button
-                align-self: center
-                height: 2.6em
-                width: 6em
-                cursor: pointer
+                button
+                    align-self: center
+                    height: 2.6em
+                    width: 6em
+                    cursor: pointer
 </style>    
