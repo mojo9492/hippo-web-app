@@ -39,9 +39,6 @@ const handleAddPost = async (post: Post) => {
 }
 
 const handleDelete = async (id: string) => {
-    // todo: delete this log: hit
-    console.log('hit', id)
-
     const deleteResult = await fetch(`http://localhost:3000/post/${id}`, {
         method: 'DELETE',
     })

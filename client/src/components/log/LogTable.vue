@@ -8,17 +8,14 @@ interface IProps {
     entries: Post[]
 }
 const props = defineProps<IProps>()
-// * date format (human-readable)
-const formatDate = (d = new Date()) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const date = new Date(d)
-    return {
-        date: `${days[date.getDay()]}, ${date.getMonth() + 1}/${date.getDate()}`,
-        time: `${date.getHours()}:${date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2 })}`,
-    }
-}
-// * ref
-const postDate = ref(new Date())
+// * refs
+const now = new Date()
+const postMonth = ref(now.getMonth())
+const postDate = ref(now.getDate())
+const postYear = ref(now.getFullYear())
+const postHour = ref(now.getHours())
+const postMinute = ref(now.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2 }))
+const nowDateChecked = ref(true)
 const postBSL = ref('')
 const postInsulin = ref('')
 const postInsAmount = ref('')
@@ -26,10 +23,18 @@ const postBloodPressureSys = ref('')
 const postBloodPressureDia = ref('')
 const postWeight = ref('')
 const postRemarks = ref('')
+// * enables editable date
+const enableDateEdit = () => {
+    nowDateChecked.value = !nowDateChecked.value
+}
 // * builds post and emits to parent
 const buildPost: () => Post = () => {
+    let date = now
+    if (!nowDateChecked.value) { // * then we need to build a new date based on user input
+        date = new Date(postYear.value - 1, postMonth.value, postDate.value, postHour.value, Number(postMinute.value))
+    }
     return {
-        date: postDate.value,
+        date,
         bsl: Number(postBSL.value) ?? 0,
         insulin: postInsulin.value,
         insAmount: Number(postInsAmount.value) ?? 0,
@@ -39,24 +44,62 @@ const buildPost: () => Post = () => {
         authorId: props.authorId ?? 0, // todo add the correct user ID to the form
     }
 }
+// * date format (human-readable)
+const formatDate = (d = new Date()) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const date = new Date(d)
+    return {
+        date: `${days[date.getDay()]}, ${date.getMonth() + 1}/${date.getDate()}`,
+        time: `${date.getHours()}:${date.getMinutes().toLocaleString('en-US', { minimumIntegerDigits: 2 })}`,
+        hours: date.getHours(),
+        minutes: date.getMinutes()
+    }
+}
 </script>
-
 <template>
     <div id="container">
         <form id="postForm" @submit.prevent="$emit('postToAdd', buildPost())">
             <label>
                 Date:
-                <input type="text" :placeholder="formatDate().date" disabled />
+                <div class="postForm-date">
+                    <select v-model="postMonth" :default="postMonth" :disabled="nowDateChecked">
+                        <option value="0">Janurary</option>
+                        <option value="1">Feburary</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                    <input type="number" inputmode="numeric" v-model="postDate" :disabled="nowDateChecked" />
+                    <input type="number" inputmode="numeric" v-model="postYear" :disabled="nowDateChecked" />
+                </div>
             </label>
             <label>
                 Time:
-                <input type="text" v-model="formatDate().time" disabled />
+                <div class="postForm-time">
+                    <input type="number" inputmode="numeric" v-model="postHour" :disabled="nowDateChecked" /> :
+                    <input type="number" inputmode="numeric" v-model="postMinute" :disabled="nowDateChecked" />
+                </div>
+            </label>
+            <label class="postForm-now-input">
+                Now
+                <div>
+                    <input type="checkbox" v-model="nowDateChecked" @click="enableDateEdit" />
+                </div>
+                Uncheck to edit date/time
             </label>
             <fieldset>
                 <legend>Blood Sugars and Insulin</legend>
                 <label>
                     Blood Sugar Level:
-                    <input type="text" v-model="postBSL" placeholder="Enter the blood sugar levels..." />
+                    <input type="number" inputmode="numeric" v-model="postBSL"
+                        placeholder="Enter the blood sugar levels..." />
                 </label>
                 <label>
                     Insulin:
@@ -66,13 +109,15 @@ const buildPost: () => Post = () => {
             </fieldset>
             <fieldset>
                 <legend>Blood Pressure</legend>
-                <input type="number" v-model="postBloodPressureSys" placeholder="Enter systolic (top) #..." />
+                <input type="number" inputmode="numeric" v-model="postBloodPressureSys"
+                    placeholder="Enter systolic (top) #..." />
                 &nbsp;/&nbsp;
-                <input type="number" v-model="postBloodPressureDia" placeholder="Enter the diastolic (bottom) #..." />
+                <input type="number" inputmode="numeric" v-model="postBloodPressureDia"
+                    placeholder="Enter the diastolic (bottom) #..." />
             </fieldset>
             <label>
                 Weight:
-                <input type="number" v-model="postWeight" placeholder="Enter weight..." />
+                <input type="number" inputmode="numeric" v-model="postWeight" placeholder="Enter weight..." />
             </label>
             <label>
                 Remarks:
@@ -98,12 +143,11 @@ const buildPost: () => Post = () => {
                     <td>{{ formatDate(entry.date).date }}</td>
                     <td>{{ formatDate(entry.date).time }}</td>
                     <td>{{ entry.bsl }}</td>
-                    <td v-if="entry.insulin?.length">{{ `${entry.insulin}: ${entry.insAmount}` }}μ</td>
-                    <td v-if="entry.bloodPressure && entry.bloodPressure.length > 1">{{ entry.bloodPressure }}</td>
-                    <td v-if="entry.weight && entry.weight > 0">{{ entry.weight }}</td>
+                    <td>{{ entry.insulin?.length && `${entry.insulin}: ${entry.insAmount}` }}μ</td>
+                    <td>{{ entry.bloodPressure && entry.bloodPressure.length > 1 && entry.bloodPressure }}</td>
+                    <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
                     <td>{{ entry.remarks }}</td>
                     <td>{{ entry.author?.first }}</td>
-                    <td></td>
                     <td><button @click="$emit('postToDelete', entry.id)">Remove</button></td>
                 </tr>
             </table>
@@ -112,6 +156,20 @@ const buildPost: () => Post = () => {
 </template>
 
 <style scoped lang="sass">
+%postForm-dual-inputs
+    display: flex
+    flex-flow: row wrap
+    justify-content: flex-start
+    place-items: center
+    margin: 1em
+    padding: 0
+
+%dual-input
+    margin: 0 1em
+    width: 8em                
+    height: 3em
+    margin: 0.5em 1
+
 #container
     padding: 1em 
 
@@ -129,20 +187,34 @@ const buildPost: () => Post = () => {
         width: 100%
         margin: 1em
 
+        .postForm-date
+            @extend %postForm-dual-inputs
+
+            select
+                @extend %dual-input
+            input
+                @extend %dual-input
+
+        .postForm-time
+            @extend %postForm-dual-inputs
+
+            input
+                @extend %dual-input
+
+        .postForm-now-input
+            @extend %postForm-dual-inputs
+
+            input
+                @extend %dual-input
+
         label
             display: flex
             flex-flow: column nowrap
             align-items: flex-start
-            pace-content: center 
+            place-content: center 
             width: 100%
             margin: 0 1em
             padding: 0.5em
-
-            input
-                height: 2.6em
-                max-width: 16em
-                min-width: 16em
-                margin: 0.5em 0
 
         fieldset
             display: flex
@@ -175,14 +247,15 @@ const buildPost: () => Post = () => {
         margin: 0 1em
         padding: 1rem
         text-align: left
-
+        border-collapse: collapse
 
         .htable-header
             font-size: 1.2rem
             font-weight: 500
-            border-collapse: collapse
+
             th
-                border-bottom: 1px solid #000
+                border: 1px solid #000
+                padding: 0 0.8rem
 
         .htable-entry
             font-size: 1rem
@@ -194,6 +267,7 @@ const buildPost: () => Post = () => {
                 border-collapse: collapse
                 max-width: 6em
                 white-space: nowrap
+                padding: 1rem
 
             
 // * shrink app to fit width of phone for width < 400px
@@ -238,7 +312,7 @@ const buildPost: () => Post = () => {
 
             button
                 width: 100%
-                margin: 0
+                margin: 1em 0 4em
         
         #htable-container
             overflow: auto
@@ -250,8 +324,15 @@ const buildPost: () => Post = () => {
             margin: 0
             padding: 0
 
+            .htable-header
+                font-size: 1rem
+                font-weight: 300
+            
+            .htable-entry
+                font-size: 0.8rem
+
             button
-                align-self: flex-end
+                align-self: center
                 height: 2.6em
                 width: 6em
                 cursor: pointer
