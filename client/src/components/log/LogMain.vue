@@ -3,6 +3,7 @@ import { Ref, ref, onMounted, watch } from 'vue'
 import { Post } from '@/models'
 import LogTable from './LogTable.vue'
 import { MBP_END } from '../../models/Core';
+import { deleteEntry, postEntry } from './LogController';
 
 interface ILogProps {
     userId: number
@@ -13,52 +14,43 @@ const props = defineProps<ILogProps>()
 // * refs
 const userEntries: Ref<Post[]> = ref([])
 const showUndo = ref(false)
-const deletedPost: Ref<Post | undefined> = ref()
+const deletedPosts: Ref<Post[]> = ref([])
 
 const handleAddPost = async (post: Post) => {
-    const response = await fetch(`${MBP_END}/post`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(post),
-    })
-    if (!response.ok) {
-        const data = await response.json()
-        throw new Error('could not add post: ' + data.body)
-    }
+    const newPost = await postEntry(post)
+    if (!newPost) return
+    console.log("🚀 ~ file: LogMain.vue ~ line 21 ~ handleAddPost ~ newPost", newPost)
     userEntries.value.push(post)
 }
-const handleDelete = async (id: string) => {
-    const deleteResult = await fetch(`${MBP_END}/post/${id}`, {
-        method: 'DELETE',
-    })
-
-    if (!deleteResult) {
-        throw new Error('could not delete post: ' + id)
-    }
-    // * show undo option
+const handleUndoPrompt = async (id: string) => {
+    // * show undo option and start 8 second countdown
     showUndo.value = true
-    deletedPost.value = userEntries.value.find((post) => post.id === id)
-    // * returns the deleted post for undo purposes
-    await deleteResult.json()
+    // * add the post to the buffer
+    deletedPosts.value.push(userEntries.value.find(post => post.id === id) as Post)
     // * remove the deleted post from the UI
     userEntries.value = userEntries.value.filter(post => post.id !== id)
 }
 const undoDeletePost = async () => {
-    const response = await fetch(`${MBP_END}/post`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(deletedPost.value),
-    })
-    if (!response.ok) {
-        const data = await response.json()
-        throw new Error('could not add post: ' + data.body)
-    }
-    userEntries.value.push(deletedPost.value as Post)
+    // * add the post to the UI
+    const post = deletedPosts.value.pop() as Post
+    userEntries.value.push(post)
     showUndo.value = false
+    if (deletedPosts.value.length > 0) { // * then blink the undo button
+        setTimeout(() => showUndo.value = true, 500)
+    }
+}
+const handleDeletion = async () => {
+    const post = deletedPosts.value.pop() as Post
+    deletedPosts.value.forEach(async (p) => {
+        await deleteEntry(p.id as string)
+    })
+    const deleteResult = await deleteEntry(post.id as string)
+    if (!deleteResult) {
+        throw deleteResult.error
+    }
+    showUndo.value = false
+    deletedPosts.value.pop()
+
 }
 // * emits
 defineEmits(['postToAdd', 'postToDelete'])
@@ -70,21 +62,22 @@ onMounted(async () => {
     const data = await response.json()
     userEntries.value = data
 })
-watch(showUndo, () => {
+// * watches for user undo state and will delete all entries in the buffer in 8 seconds
+watch(showUndo, (deleteEntry) => {
+    if (!deleteEntry) return
     setTimeout(() => {
-        showUndo.value = false
-        deletedPost.value = undefined
+        handleDeletion()
     }, 8000)
 })
 </script>
 
 <template>
     <div id="container">
-        <div v-if="showUndo"><button class="undo-button" @click="undoDeletePost">Undo?</button></div>
         <h1 v-if="userEntries">Welcome, {{ props.userName }}</h1>
         <h1 v-else>Welcome back</h1>
-        <LogTable @postToAdd="handleAddPost" @postToDelete="handleDelete" :author-id="props.userId"
+        <LogTable @postToAdd="handleAddPost" @postToDelete="handleUndoPrompt" :author-id="props.userId"
             :author-first="props.userName" :entries="userEntries" />
+        <div v-if="showUndo"><button class="undo-button" @click="undoDeletePost">Undo?</button></div>
     </div>
 </template>
 
@@ -106,6 +99,11 @@ watch(showUndo, () => {
         height: 3em
         width: 6em
         cursor: pointer
+        z-index: 1
+        position: fixed
+        top: 1em
+        right: 1em
+
         &:hover
             background: red
         &:active

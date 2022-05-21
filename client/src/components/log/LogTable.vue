@@ -113,7 +113,7 @@ const formatDate = (d = new Date()) => {
                     Insulin:
                     <input type="text" v-model="postInsulin" placeholder="Enter insulin name..." />
                     <label for="insAmount">Amount Given</label>
-                    <input id="insAmount" type="text" v-model="postInsAmount" placeholder="Enter amount..." />
+                    <input id="insAmount" type="number" inputmode="numeric" v-model="postInsAmount" placeholder="Enter amount..." />
                 </label>
             </fieldset>
             <fieldset>
@@ -220,8 +220,6 @@ input
             margin: 0 2em 1em
 
             input
-                height: 2em
-                width: 2em
                 margin: 0 2em
 
         label
