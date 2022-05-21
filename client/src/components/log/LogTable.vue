@@ -217,9 +217,12 @@ input
 
         .postForm-now-input
             @extend %postForm-dual-inputs
+            margin: 0 2em 1em
 
             input
-                @extend %dual-input
+                height: 2em
+                width: 2em
+                margin: 0 2em
 
         label
             display: flex
@@ -342,7 +345,7 @@ input
                 @extend %m-postForm-dual-inputs
 
                 input
-                    @extend %dual-input
+                    @extend %mobile-dual-input
 
             label
                 width: 90%

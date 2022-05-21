@@ -2,6 +2,7 @@
 import { Ref, ref, onMounted, watch } from 'vue'
 import { Post } from '@/models'
 import LogTable from './LogTable.vue'
+import { MBP_END } from '../../models/Core';
 
 interface ILogProps {
     userId: number
@@ -13,8 +14,9 @@ const props = defineProps<ILogProps>()
 const userEntries: Ref<Post[]> = ref([])
 const showUndo = ref(false)
 const deletedPost: Ref<Post | undefined> = ref()
+
 const handleAddPost = async (post: Post) => {
-    const response = await fetch('http://localhost:3000/post', {
+    const response = await fetch(`${MBP_END}/post`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ const handleAddPost = async (post: Post) => {
     userEntries.value.push(post)
 }
 const handleDelete = async (id: string) => {
-    const deleteResult = await fetch(`http://localhost:3000/post/${id}`, {
+    const deleteResult = await fetch(`${MBP_END}/post/${id}`, {
         method: 'DELETE',
     })
 
@@ -44,7 +46,7 @@ const handleDelete = async (id: string) => {
     userEntries.value = userEntries.value.filter(post => post.id !== id)
 }
 const undoDeletePost = async () => {
-    const response = await fetch('http://localhost:3000/post', {
+    const response = await fetch(`${MBP_END}/post`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -58,9 +60,10 @@ const undoDeletePost = async () => {
     userEntries.value.push(deletedPost.value as Post)
     showUndo.value = false
 }
+// * emits
 defineEmits(['postToAdd', 'postToDelete'])
 onMounted(async () => {
-    const response = await fetch('http://localhost:3000/post/' + props.userId)
+    const response = await fetch(`${MBP_END}/post/${props.userId}`)
     if (!response.ok) {
         throw new Error('could not find posts: ' + props.userEmail)
     }
