@@ -1,51 +1,54 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex';
-import login from './AuthController'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import login from "./AuthController";
 
-const store = useStore()
-const router = useRouter()
-const userName = ref('')
-const password = ref('')
+const store = useStore();
+const router = useRouter();
+const userName = ref("");
+const password = ref("");
 
 const handleLogin = async () => {
-    if (userName.value === 'admin' && password.value === 'admin') return 
-        const result = await login(userName.value, password.value)
-        if (!result) return 
-        
-        store.commit('setUser', result)
-        return router.push('/log')
-    // router.push( {
-    //     name: 'homeLog',
-    //     params: {
-    //         userName: userName.value,
-    //         password: password.value,
-    //     }
-    // })
-}
-
+  if (userName.value === "admin" && password.value === "admin") return;
+  const result = await login(userName.value, password.value);
+  if (!result) return;
+  // todo the user will contain a token for infosec
+  store.commit("setAuth", true);
+  store.commit("setUser", result);
+  return router.push("/log");
+};
 </script>
 
 <template>
-    <div id="container">
-        <form id="loginForm" @submit.prevent="handleLogin">
-            <fieldset>
-                <legend>Login</legend>
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter username"
-                        v-model="userName">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Enter password"
-                        v-model="password">
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </fieldset>
-        </form>
-    </div>
+  <div id="container">
+    <form id="loginForm" @submit.prevent="handleLogin">
+      <fieldset>
+        <legend>Login</legend>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            placeholder="Enter username"
+            v-model="userName"
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter password"
+            v-model="password"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </fieldset>
+    </form>
+  </div>
 </template>
 
 <style lang="sass">
@@ -103,5 +106,4 @@ const handleLogin = async () => {
             box-shadow: 0 0 8px #ccc
             background-color: #f8f8f8
             margin-bottom: 10px
-
 </style>

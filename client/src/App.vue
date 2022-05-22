@@ -2,7 +2,7 @@
   <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/log">View Your Log</router-link> |
-    <router-link to="/users">Users</router-link> 
+    <router-link to="/patients">My Patients</router-link>
   </nav>
   <router-view />
 </template>

@@ -1,38 +1,36 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import HomeView from "../views/HomeView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/",
+    name: "home",
+    component: HomeView,
   },
   {
-    path: '/log',
-    name: 'homeLog',
+    path: "/log",
+    name: "homeLog",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import('../views/LogView.vue')
-  }
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  // }
-]
+    component: () => import("@/views/LogView.vue"),
+  },
+  {
+    path: "/patients",
+    name: "myPatients",
+    component: () => import("@/views/PatientsView.vue"),
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to) => {
   // * prevent the user from navigating to server routes
-  if (to.path.startsWith('/api')) {
-  console.log("🚀 ~ file: index.ts ~ line 33 ~ router.beforeEach ~ path", to.path)
-    
-    return router.push('/')
+  if (to.path.startsWith("/api")) {
+    return router.push("/");
   }
-})
-export default router
+});
+export default router;
