@@ -256,13 +256,14 @@ const formatDate = (d = new Date()) => {
           <td>
             {{
               entry.bloodPressure &&
-              entry.bloodPressure.length > 1 &&
-              entry.bloodPressure
+              entry.bloodPressure.length > 1 ?
+              entry.bloodPressure : ''
             }}
           </td>
           <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
           <td>{{ entry.remarks }}</td>
-          <td>{{ entry.author?.first }}</td>
+          <!-- todo figure out why the author name does't save -->
+          <td>{{ entry.author?.email }}</td>
           <td>
             <button @click="$emit('postToDelete', entry.id)">Remove</button>
           </td>

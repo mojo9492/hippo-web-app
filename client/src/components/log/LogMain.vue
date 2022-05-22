@@ -15,6 +15,9 @@ const handleAddPost = async (post: Post) => {
   const newPost = await postEntry(post);
   if (!newPost) return;
   userEntries.value.push(post);
+  userEntries.value.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 };
 const handleUndoPrompt = async (id: string) => {
   // * show undo option and start 8 second countdown
@@ -72,13 +75,8 @@ watch(showUndo, (deleteEntry) => {
   <div v-if="store.state.auth" id="container">
     <h1 v-if="userEntries">Welcome, {{ store.state.user.first }}</h1>
     <h1 v-else>Welcome back</h1>
-    <LogTable
-      @postToAdd="handleAddPost"
-      @postToDelete="handleUndoPrompt"
-      :author-id="store.state.user.id"
-      :author-first="store.state.user.first"
-      :entries="userEntries"
-    />
+    <LogTable @postToAdd="handleAddPost" @postToDelete="handleUndoPrompt" :author-id="store.state.user.id"
+      :author-first="store.state.user.first" :entries="userEntries" />
     <div v-if="showUndo">
       <button class="undo-button" @click="undoDeletePost">Undo?</button>
     </div>
