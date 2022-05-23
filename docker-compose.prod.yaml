@@ -6,8 +6,8 @@ services:
         restart: always
         environment:
             - POSTGRES_DB=hippo-db
-            - POSTGRES_USER=hippo
-            - POSTGRES_PASSWORD=Docker
+            - POSTGRES_USER=$POSTGRES_USER
+            - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
         volumes:
             - postgres:/var/lib/postgresql/data
         ports:
