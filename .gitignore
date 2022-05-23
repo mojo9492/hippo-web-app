@@ -6,7 +6,8 @@ artifacts
 /tests/e2e/videos/
 /tests/e2e/screenshots/
 
-
+# local scripts
+deploy.sh
 # local env files
 .env
 api/.env
