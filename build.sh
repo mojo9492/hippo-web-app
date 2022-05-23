@@ -6,14 +6,12 @@ sleep 3
 git tag
 read -p "enter the version to tag " tag
 
-rm -rf client/dist
-rm -rf api/public/views
+git tag $tag # tag for git
 
 (cd client || exit && yarn build)
 
+rm -rf .api/public/views
+
 cp -r ./client/dist/. ./api/public/views
 
-
 echo "version: $tag completed"
-
-git tag $tag # tag for git

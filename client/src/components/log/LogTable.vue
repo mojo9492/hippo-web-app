@@ -396,7 +396,7 @@ input
                 overflow: hidden
                 overflow-x: scroll
                 border-collapse: collapse
-                max-width: 6em
+                max-width: 8em
                 white-space: nowrap
                 padding: 1rem
 

@@ -1,51 +1,52 @@
 version: '3.8'
 services:
-  nginx:
-    image: nginx
-    ports:
-      - '80:80'
-    volumes:
-      - /var/log/nginx:/var/log/nginx
-      - /var/www/html:/var/www/html
-    restart: always
-    depends_on:
-      - api
-    links:
-      - api
-      - db
-    networks:
-      - hippo-web
-  db:
-    container_name: db
-    image: postgres:10.3
-    restart: always
-    environment:
-      - POSTGRES_DB=hippo-db
-      - POSTGRES_USER=hippo
-      - POSTGRES_PASSWORD=Docker
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
-    networks:
-      - hippo-web
-  api:
-    image: node:16-alpine
-    restart: always
-    build: ./api
-    environment:
-      - DATABASE_URL=$DATABASE_URL
-    ports:
-      - '3000:3000'
-      - '5555:5555'
-    depends_on:
-      - db
-    links:
-      - db
-    networks:
-      - hippo-web
+    db:
+        container_name: hippo-db
+        image: postgres:10.3
+        restart: always
+        environment:
+            - POSTGRES_DB=hippo-db
+            - POSTGRES_USER=hippo
+            - POSTGRES_PASSWORD=Docker
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        networks:
+            - hippo-web
+    api:
+        container_name: hippo-api
+        image: node:16-alpine
+        restart: always
+        build: ./api
+        environment:
+            - DATABASE_URL=$DATABASE_URL
+        ports:
+            - 3000:3000
+        depends_on:
+            - db
+        links:
+            - db
+        networks:
+            - hippo-web
+    nginx:
+        container_name: hippo-nginx
+        build: ./.nginx
+        ports:
+            - 80:80
+        volumes:
+            - /var/log/nginx:/var/log/nginx
+            - /var/www/html:/var/www/html
+        restart: always
+        depends_on:
+            - api
+        links:
+            - api
+            - db
+        networks:
+            - hippo-web
 volumes:
-  postgres:
+    postgres:
 networks:
-  hippo-web:
-    driver: bridge
+    hippo-web:
+        driver: bridge

@@ -1,5 +1,12 @@
-# Set nginx base image
+# this is used in docker-compose.prop.yaml
 FROM nginx
 
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx configuration
+RUN rm -rf /etc/nginx/sites-enabled/default
+
 # Copy custom configuration file from the current directory
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf 
+
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
