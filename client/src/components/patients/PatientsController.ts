@@ -1,4 +1,4 @@
-import {  API_END } from "../../assets/constants";
+import { API_END } from "../../assets/constants";
 
 // todo only pull users that match userId
 export default async function getPatients(userId: number) {

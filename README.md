@@ -14,7 +14,7 @@ Simple health log to help track medications and  vital information.
 
 ### 23MAY2022
 
-- 0.1.0: Initial release
+- Initial release: v0.1.0
 - GitHub repo created
 - Docker ready
 

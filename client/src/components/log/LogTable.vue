@@ -255,9 +255,9 @@ const formatDate = (d = new Date()) => {
           </td>
           <td>
             {{
-              entry.bloodPressure &&
-              entry.bloodPressure.length > 1 ?
-              entry.bloodPressure : ''
+              entry.bloodPressure && entry.bloodPressure.length > 1
+                ? entry.bloodPressure
+                : ""
             }}
           </td>
           <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
