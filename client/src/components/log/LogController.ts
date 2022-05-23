@@ -1,15 +1,15 @@
 import { Post } from "../../models";
-import { MBP_END } from "../../models/Core";
+import { API_END } from "../../assets/constants";
 
 export async function getEntries(id: number): Promise<Post[]> {
-  const response = await fetch(`${MBP_END}/post/${id}`);
+  const response = await fetch(`${API_END}/post/${id}`);
   if (!response.ok) {
     throw new Error("could not find posts");
   }
   return await response.json();
 }
 export async function postEntry(post: Post) {
-  const response = await fetch(`${MBP_END}/post`, {
+  const response = await fetch(`${API_END}/post`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export async function postEntry(post: Post) {
 }
 
 export async function deleteEntry(id: string) {
-  const deleteResult = await fetch(`${MBP_END}/post/${id}`, {
+  const deleteResult = await fetch(`${API_END}/post/${id}`, {
     method: "DELETE",
   });
   if (!deleteResult.ok) {

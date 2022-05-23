@@ -1,6 +1,22 @@
 version: '3.8'
 services:
+  nginx:
+    image: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+      - /var/www/html:/var/www/html
+    restart: always
+    depends_on:
+      - api
+    links:
+      - api
+      - db
+    networks:
+      - hippo-web
   db:
+    container_name: db
     image: postgres:10.3
     restart: always
     environment:
@@ -23,6 +39,8 @@ services:
       - '3000:3000'
       - '5555:5555'
     depends_on:
+      - db
+    links:
       - db
     networks:
       - hippo-web
