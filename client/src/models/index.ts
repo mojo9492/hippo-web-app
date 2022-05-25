@@ -20,4 +20,5 @@ export interface User {
   password: string;
   updatedAt: Date;
   posts: Post[];
+  accessToken: string
 }
