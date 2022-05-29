@@ -1,4 +1,5 @@
 import express from 'express'
+import helmet from 'helmet'
 import cors from 'cors'
 import getUsers from './routes/getUsers'
 import getPosts from './routes/getPosts'
@@ -12,7 +13,7 @@ import path from 'path'
 import home from './routes/home'
 
 const app = express()
-
+app.use(helmet())
 app.use(express.json())
 app.use(cors())
 
