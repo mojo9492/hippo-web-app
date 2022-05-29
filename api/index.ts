@@ -1,6 +1,7 @@
 import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
+import limiter from './config/limit'
 import getUsers from './routes/getUsers'
 import getPosts from './routes/getPosts'
 import postUser from './routes/postUser'
@@ -18,6 +19,7 @@ const app = express()
 app.use(helmet())
 app.use(express.json())
 app.use(cors())
+app.use(limiter)
 app.use(express.static(staticPath, { index: false }))
 // * get
 app.get('/', home)
