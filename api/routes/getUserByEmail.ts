@@ -5,19 +5,21 @@ interface RequestParams {
     email: string
 }
 export default async function getUserByEmail(req: Request<RequestParams>, res: Response) {
-    let response
     try {
         const { email } = req.params
-        response = await prisma.user.findUnique({
+        const response = await prisma.user.findUnique({
             where: { email }
         })
         if (!response) {
             throw new Error('No user found by email.' + email)
         }
+        res.send(response)
     } catch (error) {
         if (error instanceof Error) {
-            response = error
+            res.status(500).send({
+                message: 'something went wrong'
+            })
+            throw error
         }
     }
-    res.send(response)
 }

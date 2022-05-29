@@ -7,7 +7,10 @@ export default async function home(req: Request, res: Response) {
         res.sendFile(path.join(staticPath, 'index.html'))
     } catch (error) {
         if (error instanceof Error) { 
-            res.status(500).send(error)
+            res.status(500).send({
+                message: 'something went wrong'
+            })
+            throw error
         }
     }
 }

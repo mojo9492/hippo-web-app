@@ -2,15 +2,18 @@ import { Request, Response } from 'express'
 import prisma from '../prisma'
 
 export default async function getPost(req: Request, res: Response) {
-    let response
     try {
         const { id } = req.params
-        response = await prisma.post.findFirst({
+        const response = await prisma.post.findFirst({
             where: { id: id }
         })
+        res.send(response)
     } catch (error) {
-        if (error instanceof Error) { response = error }
+        if (error instanceof Error) {
+            res.status(500).send({
+                message: 'something went wrong'
+            })
+            throw error
+        }
     }
-
-    res.send(response)
 }

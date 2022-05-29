@@ -7,20 +7,21 @@ interface IPostUserBody {
 }
 
 export default async function postUser(req: Request<any, any, IPostUserBody>, res: Response) {
-    let response
     try {
         const { user } = req.body
-        response = await prisma.user.create({
+        const response = await prisma.user.create({
             data: user,
         })
         if (!response) {
             throw new Error('Could not save entry.')
         }
+        res.send(response)
     } catch (error) {
         if (error instanceof Error) {
-            response = error
+            res.status(500).send({
+                message: 'something went wrong'
+            })
+            throw error
         }
     }
-
-    res.send(response)
 }
