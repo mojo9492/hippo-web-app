@@ -1,5 +1,4 @@
-import { User } from "@prisma/client";
-import hashToken from "../utils/hash";
+import AuthController from "../controllers/authController";
 import prisma from "../utils/prisma";
 
 export default class UserService {
@@ -24,7 +23,7 @@ export default class UserService {
             last,
             first,
             email,
-            password: await hashToken(password)
+            password: await AuthController.hashToken(password)
         }
         return prisma.user.create({
             data: newUser

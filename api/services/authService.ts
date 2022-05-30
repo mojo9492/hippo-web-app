@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import hashToken from "../utils/hash";
+import AuthController from "../controllers/authController";
 import prisma from "../utils/prisma";
 
 export default class AuthService {
@@ -12,7 +12,7 @@ export default class AuthService {
     static async whitelistRefreshToken(user: User, token: string) {
         const t = await prisma.accessToken.create({
             data: {
-                hashedToken: await hashToken(token),
+                hashedToken: await AuthController.hashToken(token),
                 userId: user.id
             }
         })

@@ -51,7 +51,6 @@ export default class AuthController {
         return await argon2.verify(hash, password)
     }
 
-
     static async login(req: Request<any, any, IUserLoginBody>, res: Response) {
         try {
             const { email, password } = req.body

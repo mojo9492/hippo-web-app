@@ -11,18 +11,40 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   last         String
   first        String
-  email        String        @unique
+  email        String          @unique
   password     String
-  updatedAt    DateTime      @default(now()) @updatedAt
-  posts        Post[]
-  AccessToken  AccessToken[]
+  updatedAt    DateTime        @default(now()) @updatedAt
+  accessTokens AccessToken[]
+  patients     Patient[]
+  cargivers    Caregiver[]
+  records      PatientRecord[]
 }
 
-model Post {
+model Patient {
+  id          Int             @id @default(autoincrement())
+  userId      Int
+  user        User?           @relation(fields: [userId], references: [id])
+  careGiverId Int
+  careGiver   Caregiver?      @relation(fields: [careGiverId], references: [id])
+  records     PatientRecord[]
+}
+
+model Caregiver {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  user     User      @relation(fields: [userId], references: [id])
+  patients Patient[]
+}
+
+model PatientRecord {
   id            String   @id @default(cuid())
+  authorId      Int      @unique
+  author        User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  patientId     Int      @unique
+  patient       Patient? @relation(fields: [patientId], references: [id])
   date          DateTime
   bloodPressure String?
   bsl           Int?
@@ -31,14 +53,12 @@ model Post {
   weight        Float?
   remarks       String?
   updatedAt     DateTime @default(now()) @updatedAt
-  authorId      Int?
-  author        User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 model AccessToken {
   id          String   @id @default(cuid())
   hashedToken String
-  userId      Int      @unique
+  userId      Int      
   user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
