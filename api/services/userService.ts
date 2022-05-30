@@ -1,5 +1,5 @@
 import AuthController from "../controllers/authController";
-import prisma from "../utils/prisma";
+import prisma from "../config/prisma";
 
 export default class UserService {
     static async findUserByEmail(email: string) {

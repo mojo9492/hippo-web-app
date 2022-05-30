@@ -1,7 +1,6 @@
 import { PatientRecord } from "@prisma/client"
 import { Request, Response } from "express"
 import RecordService from "../services/recordService"
-import prisma from "../utils/prisma"
 
 
 interface IRecordByUserIdParams {

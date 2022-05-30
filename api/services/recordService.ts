@@ -1,5 +1,5 @@
 import { PatientRecord } from "@prisma/client";
-import prisma from "../utils/prisma";
+import prisma from "../config/prisma";
 
 export default class RecordService {
     static async findRecordsByPatientId(patientId: number) {

@@ -1,19 +1,18 @@
-import { User } from "@prisma/client";
 import AuthController from "../controllers/authController";
-import prisma from "../utils/prisma";
+import prisma from "../config/prisma";
 
 export default class AuthService {
     /**
      * Used to add a new refresh token
-     * @param user the corresponding user
+     * @param userId the corresponding user
      * @param token the user's refresh token
      * @returns the id of the new access token
      */
-    static async whitelistRefreshToken(user: User, token: string) {
+    static async whitelistRefreshToken(userId: number, token: string) {
         const t = await prisma.accessToken.create({
             data: {
                 hashedToken: await AuthController.hashToken(token),
-                userId: user.id
+                userId
             }
         })
         return t.id

@@ -10,8 +10,8 @@ services:
             - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
         volumes:
             - postgres:/var/lib/postgresql/data
-        ports:
-            - 5432:5432
+        # ports:
+            # - 5432:5432
         networks:
             - hippo-web
     api:
@@ -21,8 +21,8 @@ services:
         build: ./api
         environment:
             - DATABASE_URL=$DATABASE_URL
-        ports:
-            - 3000:3000
+        # ports:
+            # - 3000:3000
         depends_on:
             - db
         links:
@@ -34,6 +34,7 @@ services:
         build: ./.nginx
         ports:
             - 80:80
+            - 443:443
         volumes:
             - /var/log/nginx:/var/log/nginx
             - /var/www/html:/var/www/html

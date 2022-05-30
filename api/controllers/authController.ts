@@ -22,9 +22,6 @@ interface IUserRefreshTokenBody {
 }
 
 export default class AuthController {
-    constructor() {
-
-    }
     static generateToken(user: User) {
         return jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: '1d' })
     }
@@ -51,7 +48,7 @@ export default class AuthController {
         return await argon2.verify(hash, password)
     }
 
-    static async login(req: Request<any, any, IUserLoginBody>, res: Response) {
+    static async login(req: Request<unknown, unknown, IUserLoginBody>, res: Response) {
         try {
             const { email, password } = req.body
 
@@ -64,25 +61,25 @@ export default class AuthController {
 
             const validatePassword = await AuthController.verifyPassword(existingUser.password, password)
             if (!validatePassword) {
-                return res.status(401).json({
-                    message: 'Invalid password'
-                })
+                res.status(401)
+                throw new Error('invalid password')
             }
 
             const tokens = AuthController.generateTokens(existingUser)
-            const whitelist = await AuthService.whitelistRefreshToken(existingUser, tokens.refreshToken)
+            const whitelist = await AuthService.whitelistRefreshToken(existingUser.id, tokens.refreshToken)
             return res.send({ tokens, whitelist }) // ? do we need to send whitelist?
         } catch (error) {
             if (error instanceof Error) {
-                res.status(500).send({
-                    message: 'something went wrong'
+                const { message } = error
+                res.send({
+                    message
                 })
                 throw error
             }
         }
     }
 
-    static async register(req: Request<any, any, IUserRegistrationBody>, res: Response) {
+    static async register(req: Request<unknown, unknown, IUserRegistrationBody>, res: Response) {
         try {
             const { email, last, first, password } = req.body
             if (!email || !password) {
@@ -100,7 +97,7 @@ export default class AuthController {
 
             const user = await UserService.createUser(last, first, email, password)
             const tokens = AuthController.generateTokens(user)
-            const whitelist = await AuthService.whitelistRefreshToken(user, tokens.refreshToken)
+            const whitelist = await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
             res.send({ tokens, whitelist }) // ? do we need to send the whitelist?
         } catch (error) {
             if (error instanceof Error) {
@@ -112,7 +109,8 @@ export default class AuthController {
         }
     }
 
-    static async refreshToken(req: Request<any, any, IUserRefreshTokenBody>, res: Response) {
+    // ? when do we need to use this?
+    static async refreshToken(req: Request<unknown, unknown, IUserRefreshTokenBody>, res: Response) {
         try {
             const { refreshToken } = req.body
             if (!refreshToken) {
@@ -120,7 +118,6 @@ export default class AuthController {
                     message: 'refreshToken is required'
                 })
             }
-            // todo this will probably not work due to the current setup for findrefreshToken
             // todo may need uuidv4 for jti
             const payload = jwt.verify(refreshToken, process.env.refresh_token_secret as string) as JwtPayload
             const savedRefreshToken = await AuthService.findRefreshToken(payload.jti as string)
@@ -144,9 +141,9 @@ export default class AuthController {
                 })
             }
 
-            const deleteRefreshTokens = await AuthService.deleteRefreshToken(payload.jti as string)
+            await AuthService.deleteRefreshToken(payload.jti as string)
             const tokens = AuthController.generateTokens(user)
-            const whitelist = await AuthService.whitelistRefreshToken(user, tokens.refreshToken)
+            const whitelist = await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
             return res.send({ tokens, whitelist }) // ? do we need to send whitelist?
         } catch (error) {
             if (error instanceof Error) {

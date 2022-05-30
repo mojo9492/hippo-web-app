@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import path from 'path'
-import { staticPath } from '../'
+import { staticPath } from '../app'
 
 export default class HomeController {
     static async home(req: Request, res: Response) {

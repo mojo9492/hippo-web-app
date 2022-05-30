@@ -1,6 +1,6 @@
 import { Router } from "express"
-import RecordController from "../../controllers/recordController"
-import isAuthenticated from "../../utils/isAuthenticated"
+import RecordController from "../controllers/recordController"
+import isAuthenticated from "../utils/isAuthenticated"
 
 const router: Router = Router()
 const endpoint = '/api/v1/record'

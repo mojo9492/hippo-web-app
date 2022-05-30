@@ -1,32 +1,33 @@
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken'
+import AuthController from '../controllers/authController'
 
 export default async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
-    // todo: delete this log: hit middleware
-    console.log('hit middleware')
-    
-    const token = <string>req.headers['auth']
-
-    let jwtPayload
-
     try {
-        jwtPayload = <any>jwt.verify(token, process.env.JWT_SECRET as string)
-        res.locals.jwtPayload = jwtPayload
+        // * when sending headers, make sure to send the correct token
+        // ? not sure but it worked when sending one but not the other
+        const token = req.headers.authorization as string
+        if (!token) {
+            res.status(401)
+            throw new Error('unauthorized')
+        }
+
+        const payload = AuthController.verifyToken(token) as JwtPayload
+
+        res.locals.jwtPayload = payload
+
+        const newToken = AuthController.generateRefreshToken(payload.userId)
+
+        res.setHeader('token', newToken)
+        next()
     } catch (error) {
-        const message = 'Invalid JWT token'
-        res.status(401)
-        res.send({
-            message
-        })
-        return
+        if (error instanceof Error) {
+            const { message } = error
+            res.send({
+                message
+            })
+            //todo change all thrown errors to console.error
+            console.error(error)
+        }
     }
-
-    const { userId, username } = jwtPayload
-    const newToken = jwt.sign({ userId, username }, process.env.JWT_SECRET as string, {
-        expiresIn: '1h'
-    })
-
-    res.setHeader('token', newToken)
-
-    next()
 }  
