@@ -11,25 +11,36 @@ datasource db {
 }
 
 model User {
-    id        Int      @id @default(autoincrement())
-    last      String
-    first     String
-    email     String   @unique
-    password  String
-    updatedAt DateTime @default(now()) @updatedAt
-    posts     Post[]
+  id           Int           @id @default(autoincrement())
+  last         String
+  first        String
+  email        String        @unique
+  password     String
+  updatedAt    DateTime      @default(now()) @updatedAt
+  posts        Post[]
+  AccessToken  AccessToken[]
 }
 
 model Post {
-    id            String   @id @default(cuid())
-    date          DateTime
-    bloodPressure String?
-    bsl           Int?
-    insulin       String
-    insAmount     Int?
-    weight        Float?
-    remarks       String?
-    updatedAt     DateTime @default(now()) @updatedAt
-    author        User?    @relation(fields: [authorId], references: [id])
-    authorId      Int?
+  id            String   @id @default(cuid())
+  date          DateTime
+  bloodPressure String?
+  bsl           Int?
+  insulin       String
+  insAmount     Int?
+  weight        Float?
+  remarks       String?
+  updatedAt     DateTime @default(now()) @updatedAt
+  authorId      Int?
+  author        User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model AccessToken {
+  id          String   @id @default(cuid())
+  hashedToken String
+  userId      Int      @unique
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  revoked     Boolean  @default(false)
 }

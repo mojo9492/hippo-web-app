@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import prisma from '../prisma'
+import prisma from '../../utils/prisma'
 
 export default async function deletePost(req: Request, res: Response) {
     try {

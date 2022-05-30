@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
-import prisma from '../prisma'
 
-export default async function getUsers(req: Request, res: Response) {
+import prisma from "../../utils/prisma"
+export default async function getPosts(req: Request, res: Response) {
     try {
-        const response = await prisma.user.findMany()
+        const response = await prisma.post.findMany()
         if (!response) {
-            throw new Error('No users found.')
+            throw new Error('No posts found.')
         }
         res.send(response)
     } catch (error) {

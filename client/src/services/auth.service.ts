@@ -7,31 +7,32 @@ class AuthController {
         email: string,
         password: string
     ): Promise<User | undefined> {
-        const response = await fetch(`${API_END}/user/${email}`, {
-            method: "GET",
-            headers: {
-                // todo will add additional JWT token
-                "Content-Type": "application/json",
-                Authorization: `Basic ${btoa(`${email}:${password}`)}`,
-            },
-        });
+        // todo remove
+        // const response = await fetch(`${API_END}/user/${email}`, {
+        //     method: "GET",
+        //     headers: {
+        //         // todo will add additional JWT token
+        //         "Content-Type": "application/json",
+        //         Authorization: `Basic ${btoa(`${email}:${password}`)}`,
+        //     },
+        // });
         const result = await axios.post(`${API_END}/user/login`, {
             email,
             password
         })
-        if (result.data.accessToken) {
-            localStorage.setItem("user", JSON.stringify(result.data.accessToken));
-        }
-        if (result.data.user) {
-            return result.data.user
-        }
-        if (!response.ok) return;
+        // todo better guard case
+        if (!result.data.accessToken) return
+        if (!result.data.user) return
+        
+        localStorage.setItem("user", JSON.stringify(result.data.accessToken));
+        return result.data.user
+        // if (!response.ok) return;
 
-        const user = await response.json();
+        // const user = await response.json();
 
-        if (!user.id) return;
+        // if (!user.id) return;
 
-        return user;
+        // return user;
     }
 
     async logout() {

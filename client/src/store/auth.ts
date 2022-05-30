@@ -17,6 +17,8 @@ export const auth = {
         user: user,
     },
     actions: {
+        // [ ] use axios to make a request to the server
+        // [ ] add route to the server to check if the user is authenticated
         async login({ commit }: ActionContext<IAuth, IStore>, payload: { email: string, password: string }): Promise<User | void> {
             const userResult = await AuthService.login(payload.email, payload.password)
             commit('loginSuccess', user);
