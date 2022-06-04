@@ -12,7 +12,9 @@ export default createStore<{
     state: {
         sec: auth.state
     },
-    getters: {},
+    getters: {
+        sec: (state: IStore) => state.sec
+    },
     mutations: {},
     actions: {},
     modules: {

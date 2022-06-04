@@ -2,6 +2,12 @@ import { PatientRecord } from "@prisma/client";
 import prisma from "../config/prisma";
 
 export default class RecordService {
+
+    static async findRecordById(id: string) {
+        return await prisma.patientRecord.findUnique({
+            where: { id }
+        })
+    }
     static async findRecordsByPatientId(patientId: number) {
         return await prisma.patientRecord.findMany({
             where: { patientId }

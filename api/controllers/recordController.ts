@@ -2,25 +2,16 @@ import { PatientRecord } from "@prisma/client"
 import { Request, Response } from "express"
 import RecordService from "../services/recordService"
 
-
-interface IRecordByUserIdParams {
-    authorId: number
-}
-
-interface IRecordByPatientIdParams {
-    patientId: number
-}
-
 export default class RecordController {
-    static async getRecordsByUserId(req: Request<IRecordByUserIdParams>, res: Response) {
+    static async getByAuthorId(req: Request<{ authorId: number }>, res: Response) {
         try {
             const { authorId } = req.params
             if (!authorId) {
                 res.status(400)
                 throw new Error('authorId is required')
             }
-
-            const response = await RecordService.findRecordsByAuthorId(authorId)
+            const recordAuthorId = Number(authorId)
+            const response = await RecordService.findRecordsByAuthorId(recordAuthorId)
             if (!response) {
                 res.status(404)
                 throw new Error('no records found for user')
@@ -38,7 +29,7 @@ export default class RecordController {
         }
     }
 
-    static async getRecordsByPatientId(req: Request<IRecordByPatientIdParams>, res: Response) {
+    static async getByPatientId(req: Request<{ patientId: number }>, res: Response) {
         try {
             const { patientId } = req.params
             if (!patientId) {
@@ -46,7 +37,8 @@ export default class RecordController {
                 throw new Error('patientId is required')
             }
 
-            const response = await RecordService.findRecordsByPatientId(patientId)
+            const recordPatientId = Number(patientId)
+            const response = await RecordService.findRecordsByPatientId(recordPatientId)
             if (!response) {
                 res.status(404)
                 throw new Error('no records found for patient')
@@ -89,16 +81,21 @@ export default class RecordController {
         }
     }
 
-    static async patchRecord(req: Request, res: Response) {
+    static async patchRecord(req: Request<{ recordId: string }>, res: Response) {
         try {
-            const { id } = req.params
-            const foundRecord = req.body as PatientRecord
-            if (!foundRecord) {
+            const { recordId } = req.params
+            const updatedRecord = req.body
+            if (!updatedRecord) {
                 res.status(400)
                 throw new Error('a post record is required')
             }
 
-            const response = await RecordService.updateRecord(id, foundRecord)
+            const existingRecord = await RecordService.findRecordById(recordId)
+            if (!existingRecord) {
+                res.status(404)
+                throw new Error('no record found')
+            }
+            const response = await RecordService.updateRecord(recordId, updatedRecord)
             if (!response) {
                 throw new Error('unable to patch record')
             }
@@ -115,7 +112,7 @@ export default class RecordController {
         }
     }
 
-    static async deletePost(req: Request, res: Response) {
+    static async deletePost(req: Request<{ recordId: string }>, res: Response) {
         try {
             const { recordId } = req.params
             const response = await RecordService.deleteRecord(recordId)

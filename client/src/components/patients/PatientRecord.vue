@@ -1,20 +1,21 @@
 <script lang="ts" setup>
-import { User } from "@/models";
+import { Patient } from "@/models";
 
 interface IProps {
-  user: User;
+  patient: Patient;
 }
 const props = defineProps<IProps>();
 </script>
 
 <template>
   <div id="container">
-    <p>{{ props.user.last }}</p>
-    <p>{{ props.user.first }}</p>
-    <p>{{ props.user.email }}</p>
+    <p>{{ props.patient.id }}</p>
+    <p>{{ props.patient.userId }}</p>
+    <p>{{ props.patient.userId }}</p>
     <button>message</button>
     <button>View Record</button>
   </div>
 </template>
 
-<style></style>
+<style>
+</style>

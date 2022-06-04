@@ -6,10 +6,10 @@ const router: Router = Router()
 const endpoint = '/api/v1/record'
 
 router.use(isAuthenticated)
-
-router.get(`${endpoint}/:id([0-9]+)`, RecordController.getRecordsByUserId)
 router.post(endpoint, RecordController.postRecord)
-router.patch(`${endpoint}/:id`, RecordController.patchRecord)
-router.delete(`${endpoint}/:id`, RecordController.deletePost)
+router.get(`${endpoint}/author/:authorId`, RecordController.getByAuthorId)
+router.get(`${endpoint}/patient/:patientId`, RecordController.getByPatientId)
+router.patch(`${endpoint}/:recordId/update`, RecordController.patchRecord)
+router.delete(`${endpoint}/:recordId/delete`, RecordController.deletePost)
 
 export default router

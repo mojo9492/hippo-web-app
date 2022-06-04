@@ -1,11 +1,17 @@
-import { API_END } from "../../assets/constants";
+import axios from "axios";
+import { PATIENTBYUSER_URL } from "../../assets/constants";
+import { Patient } from '@/models'
+import { authHeader } from "../../services/auth.service";
 
 // todo only pull users that match userId
 export default async function getPatients(userId: number) {
-  const response = await fetch(`${API_END}/users`);
-  if (!response.ok) {
-    throw new Error(`${response.status} ${response.statusText}`);
-  }
-  const patients = await response.json();
-  return patients;
+    const response = await axios.get(`${PATIENTBYUSER_URL}/${userId}`, {
+        headers: authHeader(),
+    });
+
+    if (!response.data) {
+        throw new Error(response.data);
+    }
+
+    return response.data as Patient[];
 }

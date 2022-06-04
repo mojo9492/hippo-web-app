@@ -6,8 +6,9 @@ import limiter from './config/limit'
 import path from 'path'
 import home from './routes/home'
 import auth from './routes/auth'
-import record from './routes/record'
+import caregiver from './routes/caregiver'
 import patient from './routes/patient'
+import record from './routes/record'
 
 export const staticPath = path.join(__dirname, 'public/views')
 
@@ -22,7 +23,8 @@ app.use(express.static(staticPath, { index: false }))
 // * routers
 app.use(home)
 app.use(auth)
-app.use(record)
+app.use(caregiver)
 app.use(patient)
+app.use(record)
 
 export default app

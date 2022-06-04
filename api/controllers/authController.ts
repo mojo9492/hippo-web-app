@@ -52,29 +52,28 @@ export default class AuthController {
         try {
             const { email, password } = req.body
 
-            const existingUser = await UserService.findUserByEmail(email)
-            if (!existingUser) {
-                return res.status(404).json({
-                    message: 'User not found'
-                })
+            const foundUser = await UserService.findUserByEmail(email)
+            if (!foundUser) {
+                res.status(404)
+                throw new Error('user not found')
             }
 
-            const validatePassword = await AuthController.verifyPassword(existingUser.password, password)
+            const validatePassword = await AuthController.verifyPassword(foundUser.password, password)
             if (!validatePassword) {
                 res.status(401)
                 throw new Error('invalid password')
             }
 
-            const tokens = AuthController.generateTokens(existingUser)
-            const whitelist = await AuthService.whitelistRefreshToken(existingUser.id, tokens.refreshToken)
-            return res.send({ tokens, whitelist }) // ? do we need to send whitelist?
+            const tokens = AuthController.generateTokens(foundUser)
+            await AuthService.whitelistRefreshToken(foundUser.id, tokens.refreshToken)
+            return res.send({ tokens, user: foundUser })
         } catch (error) {
             if (error instanceof Error) {
+                console.error(error)
                 const { message } = error
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }
@@ -90,21 +89,20 @@ export default class AuthController {
 
             const existingUser = await UserService.findUserByEmail(email)
             if (existingUser) {
-                return res.status(400).send({
-                    message: 'user already exists'
-                })
+                res.status(400)
+                throw new Error('user already exists')
             }
 
             const user = await UserService.createUser(last, first, email, password)
             const tokens = AuthController.generateTokens(user)
-            const whitelist = await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
-            res.send({ tokens, whitelist }) // ? do we need to send the whitelist?
+            await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
+            res.send({ tokens, user })
         } catch (error) {
             if (error instanceof Error) {
-                res.status(500).send({
+                console.error(error)
+                res.send({
                     message: 'something went wrong'
                 })
-                throw error
             }
         }
     }
@@ -143,14 +141,14 @@ export default class AuthController {
 
             await AuthService.deleteRefreshToken(payload.jti as string)
             const tokens = AuthController.generateTokens(user)
-            const whitelist = await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
-            return res.send({ tokens, whitelist }) // ? do we need to send whitelist?
+            await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
+            return res.send({ tokens })
         } catch (error) {
             if (error instanceof Error) {
-                res.status(500).send({
+                console.error(error)
+                res.send({
                     message: 'something went wrong'
                 })
-                throw error
             }
         }
     }

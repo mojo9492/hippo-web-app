@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { Post } from "@/models";
-import { ref } from "vue";
-import store from "../../store";
+import { PatientRecord } from "@/models";
+import { ref, watch } from "vue";
 // * props
 interface IProps {
   authorId: number;
   authorFirst: string;
-  entries: Post[];
+  entries: PatientRecord[];
 }
 const props = defineProps<IProps>();
 // * refs
@@ -35,7 +34,7 @@ const enableDateEdit = () => {
   nowDateChecked.value = !nowDateChecked.value;
 };
 // * builds post and emits to parent
-const buildPost: () => Post = () => {
+const buildPost = () => {
   let date = now;
   if (!nowDateChecked.value) {
     // * then we need to build a new date based on user input
@@ -55,7 +54,6 @@ const buildPost: () => Post = () => {
     bloodPressure: `${postBloodPressureSys.value}/${postBloodPressureDia.value}`,
     weight: Number(postWeight.value) ?? 0,
     remarks: postRemarks.value,
-    author: store.state.user,
     authorId: props.authorId,
   };
 };
@@ -80,27 +78,30 @@ const formatDate = (d = new Date()) => {
     minutes: date.getMinutes(),
   };
 };
+watch(nowDateChecked, (checked) => {
+  if (checked) {
+    postMonth.value = now.getMonth();
+    postDate.value = now.getDate();
+    postYear.value = now.getFullYear();
+    postHour.value = now.getHours();
+    postMinute.value = now.getMinutes().toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+    });
+  }
+});
 </script>
+
 <template>
   <div id="container">
     <button style="margin-bottom: 1em; width: 8em" @click="toggleForm">
       {{ hideForm ? "Show" : "Hide" }} Form
     </button>
-    <form
-      v-if="!hideForm"
-      id="postForm"
-      @submit.prevent="$emit('postToAdd', buildPost())"
-    >
+    <form v-if="!hideForm" id="postForm" @submit.prevent="$emit('postToAdd', buildPost())">
       <label>
         Date:
         <div class="postForm-date">
           <label for="month">Month</label>
-          <select
-            id="month"
-            v-model="postMonth"
-            :default="postMonth"
-            :disabled="nowDateChecked"
-          >
+          <select id="month" v-model="postMonth" :default="postMonth" :disabled="nowDateChecked">
             <option value="0">Janurary</option>
             <option value="1">Feburary</option>
             <option value="2">March</option>
@@ -115,53 +116,25 @@ const formatDate = (d = new Date()) => {
             <option value="11">December</option>
           </select>
           <label for="day">Day</label>
-          <input
-            id="day"
-            type="number"
-            inputmode="numeric"
-            v-model="postDate"
-            :disabled="nowDateChecked"
-          />
+          <input id="day" type="number" inputmode="numeric" v-model="postDate" :disabled="nowDateChecked" />
           <label for="year">Year</label>
-          <input
-            id="year"
-            type="number"
-            inputmode="numeric"
-            v-model="postYear"
-            :disabled="nowDateChecked"
-          />
+          <input id="year" type="number" inputmode="numeric" v-model="postYear" :disabled="nowDateChecked" />
         </div>
       </label>
       <label>
         Time:
         <div class="postForm-time">
           <label for="hour">Hour</label>
-          <input
-            id="hour"
-            type="number"
-            inputmode="numeric"
-            v-model="postHour"
-            :disabled="nowDateChecked"
-          />
+          <input id="hour" type="number" inputmode="numeric" v-model="postHour" :disabled="nowDateChecked" />
           :
           <label for="minute">Minute</label>
-          <input
-            id="minute"
-            type="number"
-            inputmode="numeric"
-            v-model="postMinute"
-            :disabled="nowDateChecked"
-          />
+          <input id="minute" type="number" inputmode="numeric" v-model="postMinute" :disabled="nowDateChecked" />
         </div>
       </label>
       <label class="postForm-now-input">
         Now
         <div>
-          <input
-            type="checkbox"
-            v-model="nowDateChecked"
-            @click="enableDateEdit"
-          />
+          <input type="checkbox" v-model="nowDateChecked" @click="enableDateEdit" />
         </div>
         Uncheck to edit date/time
       </label>
@@ -170,63 +143,29 @@ const formatDate = (d = new Date()) => {
         <label>
           Blood Sugar Level:
           <label for="bsl"></label>
-          <input
-            type="number"
-            inputmode="numeric"
-            v-model="postBSL"
-            placeholder="Enter blood sugar level..."
-          />
+          <input type="number" inputmode="numeric" v-model="postBSL" placeholder="Enter blood sugar level..." />
         </label>
         <label>
           Insulin:
-          <input
-            type="text"
-            v-model="postInsulin"
-            placeholder="Enter insulin name..."
-          />
+          <input type="text" v-model="postInsulin" placeholder="Enter insulin name..." />
           <label for="insAmount">Amount Given</label>
-          <input
-            id="insAmount"
-            type="number"
-            inputmode="numeric"
-            v-model="postInsAmount"
-            placeholder="Enter amount..."
-          />
+          <input id="insAmount" type="number" inputmode="numeric" v-model="postInsAmount"
+            placeholder="Enter amount..." />
         </label>
       </fieldset>
       <fieldset>
         <legend>Blood Pressure</legend>
-        <input
-          type="number"
-          inputmode="numeric"
-          v-model="postBloodPressureSys"
-          placeholder="Enter top #..."
-        />
+        <input type="number" inputmode="numeric" v-model="postBloodPressureSys" placeholder="Enter top #..." />
         &nbsp;/&nbsp;
-        <input
-          type="number"
-          inputmode="numeric"
-          v-model="postBloodPressureDia"
-          placeholder="Enter bottom #..."
-        />
+        <input type="number" inputmode="numeric" v-model="postBloodPressureDia" placeholder="Enter bottom #..." />
       </fieldset>
       <label>
         Weight:
-        <input
-          type="number"
-          inputmode="numeric"
-          v-model="postWeight"
-          placeholder="Enter weight..."
-        />
+        <input type="number" inputmode="numeric" v-model="postWeight" placeholder="Enter weight..." />
       </label>
       <label>
         Remarks:
-        <textarea
-          rows="5"
-          cols="40"
-          v-model="postRemarks"
-          placeholder="Enter any additional remarks..."
-        />
+        <textarea rows="5" cols="40" v-model="postRemarks" placeholder="Enter any additional remarks..." />
       </label>
 
       <button type="submit">Add Entry</button>
@@ -244,30 +183,37 @@ const formatDate = (d = new Date()) => {
           <th>Author</th>
           <th>Options</th>
         </tr>
-        <tr class="htable-entry" v-for="entry in props.entries" :key="entry.id">
-          <td>{{ formatDate(entry.date).date }}</td>
-          <td>{{ formatDate(entry.date).time }}</td>
-          <td>{{ entry.bsl }}</td>
-          <td>
-            {{
-              entry.insulin?.length && `${entry.insulin}: ${entry.insAmount}`
-            }}μ
-          </td>
-          <td>
-            {{
-              entry.bloodPressure && entry.bloodPressure.length > 1
-                ? entry.bloodPressure
-                : ""
-            }}
-          </td>
-          <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
-          <td>{{ entry.remarks }}</td>
-          <!-- todo figure out why the author name does't save -->
-          <td>{{ entry.author?.email }}</td>
-          <td>
-            <button @click="$emit('postToDelete', entry.id)">Remove</button>
-          </td>
-        </tr>
+        <Suspense>
+          <tr class="htable-entry" v-for="entry in props.entries" :key="entry.id">
+            <td>{{ formatDate(entry.date).date }}</td>
+            <td>{{ formatDate(entry.date).time }}</td>
+            <td>{{ entry.bsl }}</td>
+            <td>
+              {{
+                  entry.insulin?.length && `${entry.insulin}: ${entry.insAmount}`
+              }}μ
+            </td>
+            <td>
+              {{
+                  entry.bloodPressure && entry.bloodPressure.length > 1
+                    ? entry.bloodPressure
+                    : ""
+              }}
+            </td>
+            <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
+            <td>{{ entry.remarks }}</td>
+            <!-- todo figure out why the author name does't save -->
+            <td>{{ entry.authorId }}</td>
+            <td>
+              <button @click="$emit('postToDelete', entry.id)">Remove</button>
+            </td>
+          </tr>
+          <template #fallback>
+            <tr class="htable-entry">
+              <td colspan="9">Loading...</td>
+            </tr>
+          </template>
+        </Suspense>
       </table>
     </div>
   </div>

@@ -4,13 +4,14 @@ import AuthController from '../controllers/authController'
 
 export default async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
-        // * when sending headers, make sure to send the correct token
-        // ? not sure but it worked when sending one but not the other
-        const token = req.headers.authorization as string
+        // * when sending headers, make sure to send the correct token (accessToken)
+        const header = req.headers.authorization as string
+        const token = header.split(' ')[1]
         if (!token) {
             res.status(401)
             throw new Error('unauthorized')
         }
+
 
         const payload = AuthController.verifyToken(token) as JwtPayload
 
@@ -23,10 +24,9 @@ export default async function isAuthenticated(req: Request, res: Response, next:
     } catch (error) {
         if (error instanceof Error) {
             const { message } = error
-            res.send({
+            res.status(401).send({
                 message
             })
-            //todo change all thrown errors to console.error
             console.error(error)
         }
     }

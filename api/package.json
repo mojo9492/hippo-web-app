@@ -6,9 +6,10 @@
     "migrate:dev": "dotenv -e .env.dev yarn prisma migrate dev --name postgres-dev-init",
     "seed:dev": "dotenv -e .env.dev yarn prisma db seed",
     "studio:dev": "dotenv -e .env.dev yarn prisma studio",
+    "setup:dev": "yarn migrate:dev && yarn seed:dev && yarn studio:dev",
     "dev": "dotenv -e .env.dev ts-node index.ts",
     "start": "ts-node index.ts",
-    "test": "dotenv -e .env.dev jest --collect-coverage --detect-open-handles",
+    "test": "dotenv -e .env.dev jest --collectCoverage --detectOpenHandles",
     "lint:ci": "eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },

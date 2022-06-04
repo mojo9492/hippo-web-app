@@ -1,54 +1,45 @@
 import axios from 'axios'
-import { User } from "../models";
-import { API_END } from "../assets/constants";
+import { ACCESS_STORAGE_KEY, LOGIN_URL, REFRESH_TOKEN_KEY, REGISTER_URL } from "../assets/constants";
+import { User } from '../models';
 
-class AuthController {
-    async login(
-        email: string,
-        password: string
-    ): Promise<User | undefined> {
-        // todo remove
-        // const response = await fetch(`${API_END}/user/${email}`, {
-        //     method: "GET",
-        //     headers: {
-        //         // todo will add additional JWT token
-        //         "Content-Type": "application/json",
-        //         Authorization: `Basic ${btoa(`${email}:${password}`)}`,
-        //     },
-        // });
-        const result = await axios.post(`${API_END}/user/login`, {
-            email,
-            password
-        })
-        // todo better guard case
-        if (!result.data.accessToken) return
-        if (!result.data.user) return
-        
-        localStorage.setItem("user", JSON.stringify(result.data.accessToken));
-        return result.data.user
-        // if (!response.ok) return;
+export async function login(email: string, password: string): Promise<User | undefined> {
+    const result = await axios.post(LOGIN_URL, {
+        email,
+        password
+    })
+    const { data } = result
+    if (!data) return
 
-        // const user = await response.json();
-
-        // if (!user.id) return;
-
-        // return user;
-    }
-
-    async logout() {
-        localStorage.removeItem("user");
-    }
-
-    async register(user: User) {
-        const { email, password, last, first } = user
-        return await axios.post(`${API_END}/user/register`, {
-            email,
-            password,
-            last,
-            first,
-            post: []
-        })
-    }
+    localStorage.removeItem(ACCESS_STORAGE_KEY)
+    localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(data.tokens.accessToken))
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.tokens.refreshToken)
+    return data.user as User
 }
 
-export default new AuthController()
+export async function logout() {
+    localStorage.removeItem(ACCESS_STORAGE_KEY);
+}
+
+export async function register(user: { email: string, password: string, last: string, first: string }): Promise<User | undefined> {
+    const { email, password, last, first } = user
+    const res = await axios.post(REGISTER_URL, {
+        email,
+        password,
+        last,
+        first,
+    })
+
+    if (!res.data) return
+    const tokens = res.data.tokens
+    localStorage.setItem("user", JSON.stringify(tokens.accessToken))
+    return res.data.user as User
+}
+
+export function authHeader() {
+    const item = localStorage.getItem(ACCESS_STORAGE_KEY)
+    const accessToken = item ? JSON.parse(item) : ""
+    
+    return {
+        Authorization: 'Bearer ' + accessToken
+    }
+}

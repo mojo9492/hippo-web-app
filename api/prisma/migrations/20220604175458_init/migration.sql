@@ -14,7 +14,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Patient" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
-    "careGiverId" INTEGER NOT NULL,
+    "caregiverId" INTEGER NOT NULL,
 
     CONSTRAINT "Patient_pkey" PRIMARY KEY ("id")
 );
@@ -35,7 +35,7 @@ CREATE TABLE "PatientRecord" (
     "date" TIMESTAMP(3) NOT NULL,
     "bloodPressure" TEXT,
     "bsl" INTEGER,
-    "insulin" TEXT NOT NULL,
+    "insulin" TEXT,
     "insAmount" INTEGER,
     "weight" DOUBLE PRECISION,
     "remarks" TEXT,
@@ -59,20 +59,11 @@ CREATE TABLE "AccessToken" (
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "PatientRecord_authorId_key" ON "PatientRecord"("authorId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PatientRecord_patientId_key" ON "PatientRecord"("patientId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "AccessToken_userId_key" ON "AccessToken"("userId");
-
 -- AddForeignKey
 ALTER TABLE "Patient" ADD CONSTRAINT "Patient_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Patient" ADD CONSTRAINT "Patient_careGiverId_fkey" FOREIGN KEY ("careGiverId") REFERENCES "Caregiver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Patient" ADD CONSTRAINT "Patient_caregiverId_fkey" FOREIGN KEY ("caregiverId") REFERENCES "Caregiver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Caregiver" ADD CONSTRAINT "Caregiver_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

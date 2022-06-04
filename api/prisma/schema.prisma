@@ -27,8 +27,8 @@ model Patient {
   id          Int             @id @default(autoincrement())
   userId      Int
   user        User?           @relation(fields: [userId], references: [id])
-  careGiverId Int
-  careGiver   Caregiver?      @relation(fields: [careGiverId], references: [id])
+  caregiverId Int
+  caregiver   Caregiver?      @relation(fields: [caregiverId], references: [id])
   records     PatientRecord[]
 }
 
@@ -41,14 +41,14 @@ model Caregiver {
 
 model PatientRecord {
   id            String   @id @default(cuid())
-  authorId      Int      @unique
+  authorId      Int
   author        User?    @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  patientId     Int      @unique
+  patientId     Int
   patient       Patient? @relation(fields: [patientId], references: [id])
   date          DateTime
   bloodPressure String?
   bsl           Int?
-  insulin       String
+  insulin       String?
   insAmount     Int?
   weight        Float?
   remarks       String?
@@ -58,7 +58,7 @@ model PatientRecord {
 model AccessToken {
   id          String   @id @default(cuid())
   hashedToken String
-  userId      Int      
+  userId      Int
   user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

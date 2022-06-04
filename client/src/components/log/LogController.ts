@@ -1,14 +1,19 @@
-import { Post } from "../../models";
-import { API_END } from "../../assets/constants";
+import { PatientRecord } from "../../models";
+import { API_END, RECORDBYPATIENT_URL } from "../../assets/constants";
+import axios from "axios";
+import { authHeader } from "@/services/auth.service";
 
-export async function getEntries(id: number): Promise<Post[]> {
-  const response = await fetch(`${API_END}/post/${id}`);
-  if (!response.ok) {
+export async function getEntriesByPatientId(patientId: number): Promise<PatientRecord[]> {
+  const response = await axios.get<PatientRecord[]>(`${RECORDBYPATIENT_URL}/${patientId}`, {
+    headers: authHeader()
+  });
+  if (!response) {
     throw new Error("could not find posts");
   }
-  return await response.json();
+  return response.data;
 }
-export async function postEntry(post: Post) {
+
+export async function postEntry(post: PatientRecord) {
   const response = await fetch(`${API_END}/post`, {
     method: "POST",
     headers: {

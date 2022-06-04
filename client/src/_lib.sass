@@ -5,3 +5,23 @@ $font-size-lg: 1.25rem
 $font-size-sm: .875rem
 $font-size-xs: .75rem
 $font-size-xxs: .5rem
+
+@mixin button
+    border: none
+    border-radius: 4px
+    box-shadow: 0 0 8px #ccc
+    height: auto
+    width: 8em
+    padding: .5rem 1rem
+    margin: .5em 1em
+
+
+@mixin buttonPrimary()
+    @include button
+    background: #42b983
+    color: #fff
+
+@mixin buttonSecondary()
+    @include button
+    background: #fff
+    color: #42b983
