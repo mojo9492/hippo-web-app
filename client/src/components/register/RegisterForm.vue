@@ -3,40 +3,50 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { IStore } from "@/store";
+import validateForm from "./registerValidation";
 
 const store = useStore<IStore>();
 const router = useRouter();
 const userName = ref("");
 const password = ref("");
+const lastName = ref("");
+const firstName = ref("");
 
-const handleLogin = async () => {
-  await store.dispatch(
-    "auth/login",
-    { email: userName.value, password: password.value },
-    { root: true }
+const handleRegister = async () => {
+  const formIsValid = validateForm(
+    userName.value,
+    password.value,
+    lastName.value,
+    firstName.value
   );
-  return router.push("/");
-};
+  if (!formIsValid) return; // * add form validation message
 
-const handleRegister = () => {
-  router.push("/register");
+  const dispatchRegister = await store.dispatch("auth/register", {
+    userName: userName.value,
+    password: password.value,
+    lastName: lastName.value,
+    firstName: firstName.value,
+  });
+  // todo add banner messaging
+  if (!dispatchRegister) return;
+
+  await router.push("/");
 };
 </script>
 
 <template>
   <div id="container">
-    <form id="loginForm" @submit.prevent="handleLogin">
+    <form id="loginForm" @submit.prevent="handleRegister">
       <fieldset>
         <legend>Login</legend>
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">Email</label>
           <input
             type="text"
             class="form-control"
             id="username"
             placeholder="Enter username"
             v-model="userName"
-            autocomplete="email"
           />
         </div>
         <div class="form-group">
@@ -47,14 +57,30 @@ const handleRegister = () => {
             id="password"
             placeholder="Enter password"
             v-model="password"
-            autocomplete="current-password"
+          />
+        </div>
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="firstName"
+            placeholder="Enter first name"
+            v-model="firstName"
+          />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName"
+            placeholder="Enter last name"
+            v-model="lastName"
           />
         </div>
       </fieldset>
-      <div class="form-group-controls">
-        <button class="btn-secondary" @click="handleRegister">Register</button>
-        <button type="submit" class="btn-primary">Login</button>
-      </div>
+      <button type="submit" class="btn-primary">Register</button>
     </form>
   </div>
 </template>
@@ -108,16 +134,6 @@ const handleRegister = () => {
             background-color: #f8f8f8
             margin-bottom: 10px
 
-        .form-group-controls
-            display: flex
-            flex-flow: row nowrap
-            justify-content: space-around
-            align-items: center
-
-            .btn-primary
-                @include lib.buttonPrimary
-
-
-            .btn-secondary
-                @include lib.buttonSecondary
+        .btn-primary
+            @include lib.buttonPrimary
 </style>

@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import { computed } from "vue";
+import { useStore } from "vuex";
 
 const store = useStore();
-const loggedIn = computed(() => store.state.sec.auth)
+const loggedIn = computed(() => store.state.sec.auth);
 </script>
 <template>
   <nav v-if="loggedIn">
     <router-link to="/">Home</router-link> |
-    <router-link to="/log">Logs</router-link> |
-    <router-link to="/patients">My Patients</router-link>
+    <router-link to="/patients">My Patients</router-link> |
+    <router-link to="/logout">Log out</router-link>
   </nav>
-  <br v-else/>
+  <br v-else />
   <router-view />
 </template>
 
@@ -23,14 +23,13 @@ const loggedIn = computed(() => store.state.sec.auth)
   text-align: center
   color: #2c3e50
 
-nav 
+nav
   padding: 2rem
 
-  a 
+  a
     font-weight: bold
     color: #2c3e50
 
-    &.router-link-exact-active 
+    &.router-link-exact-active
       color: #42b983
-    
 </style>

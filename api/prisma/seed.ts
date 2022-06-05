@@ -1,6 +1,7 @@
 // import prisma from '../prisma'
 import { PrismaClient } from '@prisma/client'
 import AuthController from '../controllers/authController'
+import logger from '../utils/logger'
 
 const prisma = new PrismaClient()
 async function main() {
@@ -76,7 +77,9 @@ async function main() {
 
 main()
     .catch((e) => {
-        console.error(e)
+        if (e instanceof Error) {
+            logger.error(e.message)
+        }
         process.exit(1)
     })
     .finally(async () => {

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import CaregiverService from '../services/caregiverService'
 import UserService from '../services/userService'
+import logger from '../utils/logger'
 
 interface IPostCaregiverBody {
     userId: number
@@ -25,8 +26,35 @@ export default class CaregiverController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
+                res.send({
+                    message
+                })
+            }
+        }
+    }
+
+    static async getCaregiverByUserId(req: Request<{ userId: number }>, res: Response) {
+        try {
+            const { userId } = req.params
+            if (!userId) {
+                res.status(400)
+                throw new Error('userId is required')
+            }
+
+            const caregiverUserId = Number(userId)
+            const response = await CaregiverService.findCaregiverByUserId(caregiverUserId)
+            if (!response) {
+                res.status(404)
+                throw new Error('no caregiver found')
+            }
+
+            res.send(response)
+        } catch (error) {
+            if (error instanceof Error) {
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -47,8 +75,8 @@ export default class CaregiverController {
             res.send(newCaregiver)
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -78,8 +106,8 @@ export default class CaregiverController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -96,18 +124,18 @@ export default class CaregiverController {
             }
 
             const caregiverId = Number(id)
-
-            const response = await CaregiverService.deleteCaregiver(caregiverId)
-            if (!response) {
+            const existingCaregiver = await CaregiverService.findCaregiverById(caregiverId)
+            if (!existingCaregiver) {
                 res.status(404)
                 throw new Error('no caregiver found')
             }
 
-            res.status(204)
+            await CaregiverService.deleteCaregiver(caregiverId)
+            res.status(204).send()
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })

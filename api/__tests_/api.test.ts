@@ -71,7 +71,7 @@ describe('/api/v1', () => {
 
             const res = await request(app)
                 .post(testedEndpoint)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
                 .send(caregiver)
 
             expect(res.status).toBe(200)
@@ -87,7 +87,7 @@ describe('/api/v1', () => {
 
             const res = await request(app)
                 .get(`${testedEndpoint}/${caregiver.userId}`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -103,7 +103,7 @@ describe('/api/v1', () => {
             const res = await request(app)
                 .patch(`${testedEndpoint}/${testCaregiver.id}/update`)
                 .send(updatedCaregiver)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -115,7 +115,7 @@ describe('/api/v1', () => {
         it('should allow delete requests for existing caregivers', async () => {
             const res = await request(app)
                 .delete(`${testedEndpoint}/${testCaregiver.id}/delete`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(204)
         })
@@ -137,7 +137,7 @@ describe('/api/v1', () => {
         it('should allow post requests for new patients', async () => {
             const res = await request(app).post(testedEndpoint)
                 .send(patient)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -148,7 +148,7 @@ describe('/api/v1', () => {
         it('should get patient by userId', async () => {
             const res = await request(app)
                 .get(`${testedEndpoint}/user/${patient.userId}`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
             const receivedPatient = res.body as Patient
@@ -160,7 +160,7 @@ describe('/api/v1', () => {
             const res = await request(app)
                 .patch(`${testedEndpoint}/${patient.userId}/update`)
                 .send({ patient: updatePatient })
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -171,9 +171,9 @@ describe('/api/v1', () => {
         it('should allow delete requests', async () => {
             const res = await request(app)
                 .delete(`${testedEndpoint}/3`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
-            expect(res.status).toBe(200)
+            expect(res.status).toBe(204)
         })
     })
 
@@ -199,7 +199,7 @@ describe('/api/v1', () => {
             const res = await request(app)
                 .post(testedEndpoint)
                 .send(record)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -212,7 +212,7 @@ describe('/api/v1', () => {
         it('should get records by author id', async () => {
             const res = await request(app)
                 .get(`${testedEndpoint}/author/${record.authorId}`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -223,7 +223,7 @@ describe('/api/v1', () => {
         it('should get records by patient id', async () => {
             const res = await request(app)
                 .get(`${testedEndpoint}/patient/${record.patientId}`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -236,7 +236,7 @@ describe('/api/v1', () => {
             const res = await request(app)
                 .patch(`${testedEndpoint}/${testRecord.id}/update`)
                 .send(updatedRecord)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
             expect(res.status).toBe(200)
 
@@ -247,9 +247,9 @@ describe('/api/v1', () => {
         it('should allow delete requests', async () => {
             const res = await request(app)
                 .delete(`${testedEndpoint}/${testRecord.id}/delete`)
-                .set('Authorization', tokens.accessToken)
+                .set('Authorization', `Bearer ${tokens.accessToken}`)
 
-            expect(res.status).toBe(200)
+            expect(res.status).toBe(204)
         })
     })
 })

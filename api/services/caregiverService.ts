@@ -6,6 +6,10 @@ export default class CaregiverService {
         return await prisma.caregiver.findUnique({ where: { id } })
     }
 
+    static async findCaregiverByUserId(userId: number) {
+        return await prisma.caregiver.findFirst({ where: { userId } })
+    }
+
     static async createNewCaregiver(userId: number) {
         return await prisma.caregiver.create({
             data: {

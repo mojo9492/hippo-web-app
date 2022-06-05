@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { JwtPayload } from 'jsonwebtoken'
 import AuthController from '../controllers/authController'
+import logger from './logger'
 
 export default async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
@@ -27,7 +28,7 @@ export default async function isAuthenticated(req: Request, res: Response, next:
             res.status(401).send({
                 message
             })
-            console.error(error)
+            logger.error(message)
         }
     }
 }  

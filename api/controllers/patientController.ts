@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import PatientService from "../services/patientService";
+import UserService from "../services/userService";
+import logger from "../utils/logger";
 
 
 export default class PatientController {
@@ -19,10 +21,28 @@ export default class PatientController {
                 throw new Error('no patients found for caregiver')
             }
 
-            res.send(response)
+            const userData = response.map(async (patient) => {
+                const patientUser = await UserService.findUserById(patient.userId)
+                if (!patientUser) {
+                    res.status(404)
+                    throw new Error('no user found')
+                }
+                const { first, last, email } = patientUser
+                return {
+                    user: {
+                        first,
+                        last,
+                        email
+                    },
+                    patient: { ...patient }
+                }
+            })
+            const data = await Promise.all(userData)
+            res.send(data)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -48,7 +68,8 @@ export default class PatientController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -73,7 +94,8 @@ export default class PatientController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
@@ -98,12 +120,12 @@ export default class PatientController {
 
             const updatedPatient = { id: existingPatient.id, ...patient }
             const response = await PatientService.updatePatient(updatedPatient)
-            console.log("🚀 ~ file: patientController.ts ~ line 101 ~ PatientController ~ patchPatient ~ response", response)
 
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }, { params: req.params }, { body: req.body }])
                 res.send({
                     message
                 })
@@ -125,16 +147,13 @@ export default class PatientController {
                 throw new Error('no patient found')
             }
 
-            const response = await PatientService.deletePatient(existingPatient.id)
-            if (!response) {
-                res.status(404)
-                throw new Error('no patient found')
-            }
+            await PatientService.deletePatient(existingPatient.id)
 
-            res.send(response)
+            res.status(204).send()
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }, { params: req.params }])
                 res.send({
                     message
                 })

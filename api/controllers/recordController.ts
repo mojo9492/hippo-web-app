@@ -1,6 +1,7 @@
 import { PatientRecord } from "@prisma/client"
 import { Request, Response } from "express"
 import RecordService from "../services/recordService"
+import logger from "../utils/logger"
 
 export default class RecordController {
     static async getByAuthorId(req: Request<{ authorId: number }>, res: Response) {
@@ -20,11 +21,11 @@ export default class RecordController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }
@@ -47,11 +48,11 @@ export default class RecordController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }
@@ -72,11 +73,11 @@ export default class RecordController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }
@@ -103,32 +104,29 @@ export default class RecordController {
             res.send(response)
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }
 
-    static async deletePost(req: Request<{ recordId: string }>, res: Response) {
+    static async deleteRecord(req: Request<{ recordId: string }>, res: Response) {
         try {
             const { recordId } = req.params
-            const response = await RecordService.deleteRecord(recordId)
-            if (!response) {
-                res.status(404)
-                throw new Error('unable to delete record')
-            }
+            await RecordService.deleteRecord(recordId)
 
-            res.send(response)
+
+            res.status(204).send()
         } catch (error) {
             if (error instanceof Error) {
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message
                 })
-                throw error
             }
         }
     }

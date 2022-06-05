@@ -1,76 +1,82 @@
 <script lang="ts" setup>
-import { Ref, ref, watch } from "vue";
+import { onBeforeMount, Ref, ref, watch } from "vue";
 import { PatientRecord, User } from "@/models";
 import LogTable from "./LogTable.vue";
-import { deleteEntry, postEntry } from "./LogController";
+import { getEntriesByPatientId, postRecord, deleteEntry } from "./logService";
+import { useRouter } from "vue-router";
 
-interface ILogMain {
-  user: User,
-  entries: PatientRecord[]
-}
-const props = defineProps<ILogMain>()
-const userEntries = ref<PatientRecord[]>(props.entries);
+const router = useRouter()
+const props = defineProps<{ user: User, patientId: number }>();
+const patientRecords = ref<PatientRecord[]>([]);
+const entries = (await getEntriesByPatientId(props.patientId)) as PatientRecord[];
+// * sort by date
+patientRecords.value = entries.sort((a, b) => {
+  return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
 // * refs
 const showUndo = ref(false);
-const deletedPosts: Ref<PatientRecord[]> = ref([]);
+const deletionQueue: Ref<PatientRecord[]> = ref([]);
 // * events
-const handleAddPost = async (record: PatientRecord) => {
-  const newPost = await postEntry(record);
+const handleAddRecord = async (record: PatientRecord) => {
+  const newPost = await postRecord(record);
   if (!newPost) return;
-  userEntries.value.push(record);
-  userEntries.value.sort((a, b) => {
+  patientRecords.value.push(record);
+  patientRecords.value.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 };
-const handleUndoPrompt = async (id: string) => {
+const moveToQueueWithUndoPrompt = async (id: string) => {
   // * show undo option and start 8 second countdown
   showUndo.value = true;
   // * add the post to the buffer
-  deletedPosts.value.push(
-    userEntries.value.find((post) => post.id === id) as PatientRecord
+  deletionQueue.value.push(
+    patientRecords.value.find((post) => post.id === id) as PatientRecord
   );
   // * remove the deleted post from the UI
-  userEntries.value = userEntries.value.filter((post) => post.id !== id);
+  patientRecords.value = patientRecords.value.filter((post) => post.id !== id);
 };
-const undoDeletePost = async () => {
+const undoDeleteRecord = async () => {
   // * add the post to the UI
-  const post = deletedPosts.value.pop() as PatientRecord;
-  userEntries.value.push(post);
+  const post = deletionQueue.value.pop() as PatientRecord;
+  patientRecords.value.push(post);
   showUndo.value = false;
-  if (deletedPosts.value.length > 0) {
+  if (deletionQueue.value.length > 0) {
     // * then blink the undo button
     setTimeout(() => (showUndo.value = true), 500);
   }
 };
-const handleDeletion = async () => {
-  const post = deletedPosts.value.pop() as PatientRecord;
-  deletedPosts.value.forEach(async (p) => {
-    await deleteEntry(p.id as string);
+const deleteRecords = async () => {
+  // const record = deletionQueue.value.pop() as PatientRecord;
+  // const deleteResult = await deleteEntry(record.id as string);
+  deletionQueue.value.forEach(async (r) => {
+    await deleteEntry(r.id as string);
   });
-  const deleteResult = await deleteEntry(post.id as string);
-  if (!deleteResult) {
-    throw deleteResult.error;
-  }
   showUndo.value = false;
-  deletedPosts.value.pop();
+  deletionQueue.value.pop();
 };
 // * emits
-defineEmits(["postToAdd", "postToDelete"]);
+defineEmits(["addRecord", "deleteRecord"]);
 // * watches for user undo state and will delete all entries in the buffer in 8 seconds
 watch(showUndo, (deleteEntry) => {
   if (!deleteEntry) return;
   setTimeout(() => {
-    handleDeletion();
+    deleteRecords();
   }, 8000);
 });
+onBeforeMount(() => {
+  if (!props.user) {
+    router.push({ name: "login" });
+  }
+})
 </script>
 
 <template>
   <div id="container">
-    <LogTable @postToAdd="handleAddPost" @postToDelete="handleUndoPrompt" :author-id="props.user.id"
-      :author-first="props.user.first" :entries="props.entries" />
+    <h2>patient: {{ patientId }}</h2>
+    <LogTable @addRecord="handleAddRecord" @deleteRecord="moveToQueueWithUndoPrompt" :author-id="props.user.id"
+      :author-first="props.user.first" :patient-id="patientId" :entries="patientRecords" />
     <div v-if="showUndo">
-      <button class="undo-button" @click="undoDeletePost">Undo?</button>
+      <button class="undo-button" @click="undoDeleteRecord">Undo?</button>
     </div>
   </div>
 </template>

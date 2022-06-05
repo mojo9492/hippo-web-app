@@ -10,20 +10,14 @@ services:
             - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
         volumes:
             - postgres:/var/lib/postgresql/data
-        # ports:
-            # - 5432:5432
         networks:
             - hippo-web
     api:
         container_name: hippo-api
-        image: node:16-alpine
         restart: always
         build: ./api
         environment:
             - DATABASE_URL=$DATABASE_URL
-        # ports:
-            # - 3000:3000
-        depends_on:
             - db
         links:
             - db

@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/log",
-    name: "homeLog",
+    name: "log",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -21,14 +21,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("@/views/PatientsView.vue"),
   },
   {
-    path: '/register',
-    name: 'register',
-    component: () => import('@/views/RegisterView.vue'),
+    path: "/register",
+    name: "register",
+    component: () => import("@/views/RegisterView.vue"),
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/LoginView.vue'),
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/LoginView.vue"),
+  },
+  {
+    path: "/logout",
+    name: "logout",
+    component: () => import("@/views/LogoutView.vue")
   }
 ];
 
@@ -37,10 +42,11 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from, next) => {
   // * prevent the user from navigating to server routes
   if (to.path.startsWith("/api")) {
     return router.push("/");
   }
+  next()
 });
 export default router;

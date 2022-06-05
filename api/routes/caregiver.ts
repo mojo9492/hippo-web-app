@@ -3,12 +3,13 @@ import CaregiverController from "../controllers/caregiverController";
 import isAuthenticated from "../utils/isAuthenticated";
 
 const router: Router = Router()
-const endpoint = '/api/v1'
+const endpoint = '/api/v1/caregiver'
 
 router.use(isAuthenticated)
-router.get(`${endpoint}/caregiver/:id`, CaregiverController.getCaregiverById)
-router.post(`${endpoint}/caregiver`, CaregiverController.postNewCaregiver)
-router.patch(`${endpoint}/caregiver/:id/update`, CaregiverController.patchCaregiver)
-router.delete(`${endpoint}/caregiver/:id/delete`, CaregiverController.deleteCaregiver)
+router.get(`${endpoint}/:id`, CaregiverController.getCaregiverById)
+router.get(`${endpoint}/user/:userId`, CaregiverController.getCaregiverByUserId)
+router.post(endpoint, CaregiverController.postNewCaregiver)
+router.patch(`${endpoint}/:id/update`, CaregiverController.patchCaregiver)
+router.delete(`${endpoint}/:id/delete`, CaregiverController.deleteCaregiver)
 
 export default router

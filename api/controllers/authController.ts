@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import AuthService from '../services/authService'
 import UserService from '../services/userService'
 import argon2 from 'argon2'
+import logger from '../utils/logger'
 
 interface IUserLoginBody {
     email: string
@@ -69,8 +70,8 @@ export default class AuthController {
             return res.send({ tokens, user: foundUser })
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
-                const { message } = error
+                const { message, name, stack } = error
+                logger.error(message, [{ name },{ stack }])
                 res.send({
                     message
                 })
@@ -99,7 +100,8 @@ export default class AuthController {
             res.send({ tokens, user })
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
+                const { message, name, stack } = error
+                logger.error(message, [{ name },{ stack }])
                 res.send({
                     message: 'something went wrong'
                 })
@@ -116,7 +118,7 @@ export default class AuthController {
                     message: 'refreshToken is required'
                 })
             }
-            // todo may need uuidv4 for jti
+
             const payload = jwt.verify(refreshToken, process.env.refresh_token_secret as string) as JwtPayload
             const savedRefreshToken = await AuthService.findRefreshToken(payload.jti as string)
             if (!savedRefreshToken || savedRefreshToken.revoked) {
@@ -145,7 +147,8 @@ export default class AuthController {
             return res.send({ tokens })
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error)
+                const { message, name, stack } = error
+                logger.error(message, [{ name },{ stack }])
                 res.send({
                     message: 'something went wrong'
                 })

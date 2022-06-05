@@ -30,3 +30,5 @@ pnpm-debug.log*
 *.sw?
 api/.env.dev
 api/coverage
+api/logs
+api/public/views

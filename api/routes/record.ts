@@ -10,6 +10,6 @@ router.post(endpoint, RecordController.postRecord)
 router.get(`${endpoint}/author/:authorId`, RecordController.getByAuthorId)
 router.get(`${endpoint}/patient/:patientId`, RecordController.getByPatientId)
 router.patch(`${endpoint}/:recordId/update`, RecordController.patchRecord)
-router.delete(`${endpoint}/:recordId/delete`, RecordController.deletePost)
+router.delete(`${endpoint}/:recordId/delete`, RecordController.deleteRecord)
 
 export default router
