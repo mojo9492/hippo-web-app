@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "here are the list of tags"
-sleep 3
+sleep 2
 
 git tag
 read -p "enter the version to tag " tag

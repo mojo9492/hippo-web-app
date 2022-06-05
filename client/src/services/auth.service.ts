@@ -11,20 +11,25 @@ export async function login(
   email: string,
   password: string
 ): Promise<User | undefined> {
-  const result = await axios.post(LOGIN_URL, {
-    email,
-    password,
-  });
-  const { data } = result;
-  if (!data) return;
+  try {
+    const result = await axios.post(LOGIN_URL, {
+      email,
+      password,
+    });
+    const { data } = result;
+    if (!data.tokens) return;
 
-  localStorage.removeItem(ACCESS_STORAGE_KEY);
-  localStorage.setItem(
-    ACCESS_STORAGE_KEY,
-    JSON.stringify(data.tokens.accessToken)
-  );
-  localStorage.setItem(REFRESH_TOKEN_KEY, data.tokens.refreshToken);
-  return data.user as User;
+    localStorage.removeItem(ACCESS_STORAGE_KEY);
+    localStorage.setItem(
+      ACCESS_STORAGE_KEY,
+      JSON.stringify(data.tokens.accessToken)
+    );
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.tokens.refreshToken);
+    return data.user as User;
+  } catch (error) {
+    if (error instanceof Error) throw error;
+  }
+
 }
 
 export async function logout() {
@@ -37,18 +42,22 @@ export async function register(user: {
   last: string;
   first: string;
 }): Promise<User | undefined> {
-  const { email, password, last, first } = user;
-  const res = await axios.post(REGISTER_URL, {
-    email,
-    password,
-    last,
-    first,
-  });
+  try {
+    const { email, password, last, first } = user;
+    const res = await axios.post(REGISTER_URL, {
+      email,
+      password,
+      last,
+      first,
+    });
 
-  if (!res.data) return;
-  const tokens = res.data.tokens;
-  localStorage.setItem("user", JSON.stringify(tokens.accessToken));
-  return res.data.user as User;
+    if (!res.data.tokens) return;
+    const tokens = res.data.tokens;
+    localStorage.setItem("user", JSON.stringify(tokens.accessToken));
+    return res.data.user as User;
+  } catch (error) {
+    if (error instanceof Error) throw error;
+  }
 }
 
 export function authHeader() {
