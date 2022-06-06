@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Post } from "@/models";
-import { ref } from "vue";
-import store from "../../store";
+import { PatientRecord } from "@/models";
+import { ref, watch } from "vue";
 // * props
 interface IProps {
   authorId: number;
   authorFirst: string;
-  entries: Post[];
+  patientId: number;
+  entries: PatientRecord[];
 }
 const props = defineProps<IProps>();
 // * refs
@@ -35,7 +35,7 @@ const enableDateEdit = () => {
   nowDateChecked.value = !nowDateChecked.value;
 };
 // * builds post and emits to parent
-const buildPost: () => Post = () => {
+const buildRecord = () => {
   let date = now;
   if (!nowDateChecked.value) {
     // * then we need to build a new date based on user input
@@ -48,15 +48,15 @@ const buildPost: () => Post = () => {
     );
   }
   return {
-    date,
-    bsl: Number(postBSL.value) ?? 0,
-    insulin: postInsulin.value,
-    insAmount: Number(postInsAmount.value) ?? 0,
-    bloodPressure: `${postBloodPressureSys.value}/${postBloodPressureDia.value}`,
-    weight: Number(postWeight.value) ?? 0,
-    remarks: postRemarks.value,
-    author: store.state.user,
     authorId: props.authorId,
+    patientId: props.patientId,
+    date,
+    bsl: Number(postBSL.value),
+    insulin: postInsulin.value,
+    insAmount: Number(postInsAmount.value),
+    bloodPressure: `${postBloodPressureSys.value}/${postBloodPressureDia.value}`,
+    weight: Number(postWeight.value),
+    remarks: postRemarks.value,
   };
 };
 // * date format (human-readable)
@@ -80,7 +80,19 @@ const formatDate = (d = new Date()) => {
     minutes: date.getMinutes(),
   };
 };
+watch(nowDateChecked, (checked) => {
+  if (checked) {
+    postMonth.value = now.getMonth();
+    postDate.value = now.getDate();
+    postYear.value = now.getFullYear();
+    postHour.value = now.getHours();
+    postMinute.value = now.getMinutes().toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+    });
+  }
+});
 </script>
+
 <template>
   <div id="container">
     <button style="margin-bottom: 1em; width: 8em" @click="toggleForm">
@@ -89,7 +101,7 @@ const formatDate = (d = new Date()) => {
     <form
       v-if="!hideForm"
       id="postForm"
-      @submit.prevent="$emit('postToAdd', buildPost())"
+      @submit.prevent="$emit('addRecord', buildRecord())"
     >
       <label>
         Date:
@@ -244,14 +256,17 @@ const formatDate = (d = new Date()) => {
           <th>Author</th>
           <th>Options</th>
         </tr>
+
         <tr class="htable-entry" v-for="entry in props.entries" :key="entry.id">
           <td>{{ formatDate(entry.date).date }}</td>
           <td>{{ formatDate(entry.date).time }}</td>
           <td>{{ entry.bsl }}</td>
           <td>
             {{
-              entry.insulin?.length && `${entry.insulin}: ${entry.insAmount}`
-            }}μ
+              entry.insulin?.length
+                ? `${entry.insulin}: ${entry.insAmount}μ`
+                : ""
+            }}
           </td>
           <td>
             {{
@@ -260,12 +275,11 @@ const formatDate = (d = new Date()) => {
                 : ""
             }}
           </td>
-          <td>{{ entry.weight && entry.weight > 0 && entry.weight }}</td>
+          <td>{{ entry.weight || '' }}</td>
           <td>{{ entry.remarks }}</td>
-          <!-- todo figure out why the author name does't save -->
-          <td>{{ entry.author?.email }}</td>
+          <td>{{ entry.authorId }}</td>
           <td>
-            <button @click="$emit('postToDelete', entry.id)">Remove</button>
+            <button @click="$emit('deleteRecord', entry.id)">Remove</button>
           </td>
         </tr>
       </table>

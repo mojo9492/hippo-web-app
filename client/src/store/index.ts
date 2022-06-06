@@ -1,32 +1,20 @@
 import { createStore } from "vuex";
-import { User } from "@/models";
+import { auth, IAuth } from "./auth";
 
-interface IState {
-  auth: boolean;
-  user: User | undefined;
+export interface IStore {
+  sec: IAuth;
 }
 
-export default createStore<IState>({
+export default createStore<IStore>({
   state: {
-    auth: false,
-    user: undefined,
+    sec: auth.state,
   },
   getters: {
-    isAuthenticated: (state) => state.auth,
-    getUser: (state) => state.user,
+    sec: (state: IStore) => state.sec,
   },
-  mutations: {
-    setAuth(state, auth: boolean) {
-      state.auth = auth;
-    },
-    setUser(state, user: User) {
-      // const token = localStorage.getItem('token')
-      // cosnt user = JSON.parse(atob(token.split('.')[1]))
-      // if (!token) return
-
-      state.user = user;
-    },
-  },
+  mutations: {},
   actions: {},
-  modules: {},
+  modules: {
+    auth,
+  },
 });

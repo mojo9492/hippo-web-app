@@ -1,13 +1,8 @@
-import { Request, Response } from 'express'
-import path from 'path'
-import { staticPath } from '..'
+import { Router } from 'express'
+import HomeController from '../controllers/homeController'
 
-export default async function home(req: Request, res: Response) {
-    try {
-        res.sendFile(path.join(staticPath, 'index.html'))
-    } catch (error) {
-        if (error instanceof Error) { 
-            res.status(500).send(error)
-        }
-    }
-}
+const router: Router = Router()
+
+router.get('/', HomeController.home)
+
+export default router

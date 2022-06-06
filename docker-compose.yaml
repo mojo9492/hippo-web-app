@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   db:
+    container_name: hippo-db-dev
     image: postgres:10.3
     restart: always
     environment:

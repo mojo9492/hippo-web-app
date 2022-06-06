@@ -3,8 +3,15 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
+    "migrate:dev": "dotenv -e .env.dev yarn prisma migrate dev --name postgres-dev-init",
+    "seed:dev": "dotenv -e .env.dev yarn prisma db seed",
+    "studio:dev": "dotenv -e .env.dev yarn prisma studio",
+    "setup:dev": "yarn migrate:dev && yarn seed:dev && yarn studio:dev",
+    "dev": "dotenv -e .env.dev ts-node index.ts",
     "start": "ts-node index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "dotenv -e .env.dev jest --collectCoverage --detectOpenHandles",
+    "lint:ci": "eslint . --max-warnings 0 --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -12,14 +19,30 @@
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/express-jwt": "^6.0.4",
+    "@types/jest": "^27.5.1",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^17.0.34",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.16.0",
+    "jest-mock-extended": "^2.0.6",
     "prisma": "^3.14.0",
+    "ts-jest": "^28.0.3",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
   },
   "dependencies": {
     "@prisma/client": "^3.14.0",
+    "argon2": "^0.28.5",
     "cors": "^2.8.5",
-    "express": "^4.18.1"
+    "dotenv-cli": "^5.1.0",
+    "express": "^4.18.1",
+    "express-rate-limit": "6.4.0",
+    "helmet": "^5.1.0",
+    "jest": "^28.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "supertest": "^6.2.3"
   }
 }
