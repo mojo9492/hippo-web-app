@@ -7,6 +7,9 @@ class Logger {
     private logFile: string
     constructor() {
         this.logFile = './logs/info.log'
+        if (!fs.existsSync('./logs')) {
+            fs.mkdirSync('./logs')
+        }
     }
     info(message: string, data?: ILoggerData | ILoggerData[]) {
         fs.appendFileSync(this.logFile, `[INFO] ${message}\n`)
