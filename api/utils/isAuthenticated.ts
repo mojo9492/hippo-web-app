@@ -5,6 +5,9 @@ import logger from './logger'
 
 export default async function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
+        if (req.path === '/api/v1/user/login' || req.path === '/api/v1/register') {
+            return next()
+        }
         // * when sending headers, make sure to send the correct token (accessToken)
         const header = req.headers.authorization as string
         const token = header.split(' ')[1]
