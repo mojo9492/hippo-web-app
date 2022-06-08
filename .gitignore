@@ -32,3 +32,4 @@ api/.env.dev
 api/coverage
 api/logs
 api/public/views
+nginx/ssl/

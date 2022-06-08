@@ -6,11 +6,11 @@ Simple health log to help track medications and  vital information.
 ## Roadmap
 
 ### Features to come
-- login functionality
-- register a user
-- add a patient profile
-- multiple patients registered to user
-- author stamp on each entry
+- [x] login functionality
+- [ ] register a user
+- [ ] add a patient profile
+- [x] multiple patients registered to user
+- [ ] author stamp on each entry
 
 ### 23MAY2022
 
@@ -32,8 +32,13 @@ Simple health log to help track medications and  vital information.
    -  `DATABASE_URL` set to the postgres database url 
    -  `POSTGRES_USER` set to the postgres user
    -  `POSTGRES_PASSWORD` set to the postgres password
-3. Use the `run.sh` script to start the app
-4. Navigate to [http://localhost](http://localhost) to view
+3. You will need to setup PKI for NGINX
+   - make sure you have openssl installed
+   - run `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./nginx/ssl/private/hippo-nginx-selfsigned.key -out ./nginx/ssl/certs/hippo-nginx-selfsigned.crt
+> Ensure this command is run at the project root level (where the .env file is) to ensure they are in the correct location
+Copy`
+1. Use the `run.sh` script to start the app
+2. Navigate to [http://localhost](http://localhost) to view
 
 > ports 3000 and 80 are used for API and NGINX
 
@@ -52,8 +57,8 @@ Simple health log to help track medications and  vital information.
 ## Development Feature Work
 
 Hippo uses typescript to build the frontend and backend, ESLint and Prettier are used to enforce code quality.
-> use `prettier --write` and `yarn lint` to run Prettier andESLint in the `client` directory
+> Use `prettier --write` and `yarn lint` to run Prettier andESLint in the `client` directory
 
 When ready to build the app, you may use the `build.sh` script in the root directory to build the client and move it to the server directory.
 
-> to both build and run the production build locally, use `run.local.sh` to build and start the appiclation on the local machine
+> To both build and run the production build locally, use `run.local.sh` to build and start the appiclation on the local machine
