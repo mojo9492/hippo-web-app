@@ -42,7 +42,7 @@ export default class PatientController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -69,7 +69,7 @@ export default class PatientController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -95,7 +95,7 @@ export default class PatientController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -125,7 +125,7 @@ export default class PatientController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }, { params: req.params }, { body: req.body }])
+                logger.error(name, [{ message }, { stack }, { params: req.params }, { body: req.body }])
                 res.send({
                     message
                 })
@@ -153,7 +153,7 @@ export default class PatientController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }, { params: req.params }])
+                logger.error(name, [{ message }, { stack }, { params: req.params }])
                 res.send({
                     message
                 })

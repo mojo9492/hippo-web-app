@@ -10,9 +10,9 @@ export default class HomeController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.status(500).send({
-                    message: 'something went wrong'
+                    message: 'something went wrong on our end'
                 })
             }
         }
