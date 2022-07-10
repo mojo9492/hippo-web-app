@@ -52,10 +52,11 @@ export default class AuthController {
     static async login(req: Request<unknown, unknown, IUserLoginBody>, res: Response) {
         try {
             const { email, password } = req.body
+            logger.info('login attempt', [{ email }])
 
             const foundUser = await UserService.findUserByEmail(email)
             if (!foundUser) {
-                res.status(404)
+                res.status(401)
                 throw new Error('user not found')
             }
 
@@ -71,9 +72,9 @@ export default class AuthController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name },{ stack }])
+                logger.error(`login unsuccessful ${name}`, [{ message }, { stack }])
                 res.send({
-                    message
+                    message: 'username/password is incorrect'
                 })
             }
         }
@@ -97,13 +98,14 @@ export default class AuthController {
             const user = await UserService.createUser(last, first, email, password)
             const tokens = AuthController.generateTokens(user)
             await AuthService.whitelistRefreshToken(user.id, tokens.refreshToken)
+            logger.info('user registered', [{ email }])
             res.send({ tokens, user })
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name },{ stack }])
+                logger.error(`registration unsuccessful ${name}`, [{ message }, { stack }])
                 res.send({
-                    message: 'something went wrong'
+                    message: 'could not register user'
                 })
             }
         }
@@ -148,7 +150,7 @@ export default class AuthController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name },{ stack }])
+                logger.error(message, [{ name }, { stack }])
                 res.send({
                     message: 'something went wrong'
                 })

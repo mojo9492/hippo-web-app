@@ -22,7 +22,7 @@ export default class RecordController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -49,7 +49,7 @@ export default class RecordController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -74,7 +74,7 @@ export default class RecordController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -105,7 +105,7 @@ export default class RecordController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
@@ -123,7 +123,7 @@ export default class RecordController {
         } catch (error) {
             if (error instanceof Error) {
                 const { message, name, stack } = error
-                logger.error(message, [{ name }, { stack }])
+                logger.error(name, [{ message }, { stack }])
                 res.send({
                     message
                 })
